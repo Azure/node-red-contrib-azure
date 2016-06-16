@@ -1,4 +1,4 @@
-node-red-contrib-azure-iot-hub
+Node-Red connector to Azure IoT Hub (many devices)
 ==============================
 
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to Azure IoT Hub.
