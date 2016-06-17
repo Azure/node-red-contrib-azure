@@ -15,21 +15,29 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 Usage
 -----
 
-Azure node. Can be used to upload and download on Azure Blob Storage:
+Azure node. Can be used to upload and download on Azure Blob Storage using 2 nodes:
 
  - Supports :
  
 ◦Create/Delete Containers
-◦Create Blobs
+◦Create Blobs/Read
 
-Still working on /Read/Update/Delete Blobs
+Still working on Update/Delete Blobs
 
-
+##Save Blob
 Use `msg.payload` to send a file to save on Azure Blob Storage.
 
 Ex: 'msg.payload' -> filename that you need to upload. Ex: filename.txt
 
 This file must to be in the same folder of Node-RED user directory - typically `~/.node-red`
+
+##Get Blob
+Use `msg.payload` to send a filename that will is save at local.
+
+Ex: 'msg.payload' -> filename. Ex: filename.txt
+
+This file will is save in the same folder of Node-RED user directory - typically `~/.node-red`
+
 
 -----
 

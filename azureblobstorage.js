@@ -20,16 +20,16 @@ module.exports = function (RED) {
         node.status({ fill: status.color, shape: "dot", text: status.text });
     }
 
-    var downloadBlob = function (container, blob) {
-        node.log('Downloading data from Azure Blob Storage :\n   data: ' + file);
-        clientBlobService.getBlobToStream(container, blob, fs.createWriteStream('output.txt'), function(error, result, response){
+    var downloadBlob = function (container, blob, filename) {
+        node.log('Downloading data from Azure Blob Storage :\n   blob: ' + blob);
+        clientBlobService.getBlobToStream(container, blob, fs.createWriteStream(filename), function(err, result, response){
             if (err) {
                 node.error('Error while trying to download file:' + err.toString());
                 setStatus(statusEnum.error);
             } else {
-                node.log(result);
+                node.log(JSON.stringify(result));
                 setStatus(statusEnum.sent);
-                node.send(result);
+                node.send(filename + 'downloaded');
             }
         });
     };
@@ -118,15 +118,51 @@ module.exports = function (RED) {
         });
     }
 
+    function AzureBlobStorageDownload(config) {
+        // Store node for further use
+        node = this;
+        nodeConfig = config;
+
+        // Create the Node-RED node
+        RED.nodes.createNode(this, config);
+        clientConnectionString = node.credentials.connectionstring;
+        clientContainerName = node.credentials.container;
+        clientBlobName = node.credentials.blob;
+
+        this.on('input', function (msg) {
+            node.log('downloading blob')
+            // Sending order to Azure Blob Storage
+            createContainer(clientContainerName);
+            setStatus(statusEnum.sending);
+            downloadBlob(clientContainerName, clientBlobName, msg.payload);   
+        });
+
+        this.on('close', function () {
+            disconnectFrom(this);
+        });
+    }
+
     // Registration of the node into Node-RED
-    RED.nodes.registerType("azureblobstorage", AzureBlobStorage, {
+    RED.nodes.registerType("Save Blob", AzureBlobStorage, {
         credentials: {
             connectionstring: { type: "text" },
             container: { type: "text" },
             blob: { type: "text" },
         },
         defaults: {
-            name: { value: "Azure Blob Storage" },
+            name: { value: "Save in Blob Storage" },
+        }
+    });
+
+    // Registration of the node into Node-RED to download
+    RED.nodes.registerType("Get Blob", AzureBlobStorageDownload, {
+        credentials: {
+            connectionstring: { type: "text" },
+            container: { type: "text" },
+            blob: { type: "text" },
+        },
+        defaults: {
+            name: { value: "Get Blob Storage" },
         }
     });
 
