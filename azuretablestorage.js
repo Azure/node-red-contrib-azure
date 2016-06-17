@@ -68,7 +68,6 @@ module.exports = function (RED) {
 
     function createTable(tableName) {
         node.log('Creating a table if not exists');
-        //var tableService = Client.createTableService('DefaultEndpointsProtocol=https;AccountName=holsml;AccountKey=/tR+1C8P30gpkl2n7EZXka+zWz4xDLl6+8iKFXGVTQvoLW1X9Y7H8YCl8ZbGkIWaXrmRtkqWe3VXK+PJS3t4+w==');
         var tableService = Client.createTableService(clientConnectionString);
         client = tableService;
         tableService.createTableIfNotExists(tableName, function(error, result, response) {
