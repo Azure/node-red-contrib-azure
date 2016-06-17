@@ -4,8 +4,6 @@ module.exports = function (RED) {
     var globaltable = null;
     var client = null;
     var clientConnectionString = "";
-    var accountName = "";
-    var AccessKey = "";
     var node = null;
     var nodeConfig = null;
 
@@ -20,43 +18,48 @@ module.exports = function (RED) {
         node.status({ fill: status.color, shape: "dot", text: status.text });
     }
 
-    var sendData = function (table, pkey, rkey, description) {
-        node.log('Saving data into Azure Table Storage :\n   data: ' + pkey + " - " + rkey);
+    var senddata = function (table, pkey, rkey, data) {
+        node.log('Saving data into Azure Table Storage :\n   data: ' + pkey + " - " + rkey + " - " + data + " - " + table);
         // Create a message and send it to the Azure Table Storage
-        var entGen = azure.TableUtilities.entityGenerator;
-        var now = new Date();
+        var entGen = Client.TableUtilities.entityGenerator;
+        node.log('creating entity...');
         var entity = {
-            PartitionKey: pkey,
-            RowKey: rkey,
-            description: description,
-            dueDate: entGen.DateTime(new Date(Date.UTC(now.getUTCFullYear, now.getUTCMonth, now.getUTCDay))),
+            PartitionKey: entGen.String(pkey),
+            RowKey: entGen.String(rkey),
+            data: entGen.String(data),
         };
+        node.log('entity created successfully');
         client.insertEntity(table, entity, function(err, result, response) {
+            node.log('trying to insert');
             if (err) {
                 node.error('Error while trying to save data:' + err.toString());
                 setStatus(statusEnum.error);
             } else {
                 node.log('data saved.');
                 setStatus(statusEnum.sent);
-                node.send("data saved");
+                node.send('data saved.');
             }
         });
     };
 
-    var readData = function (table, pkey, rkey) {
+    var readdata = function (table, pkey, rkey) {
         node.log('Reading data from Azure Table Storage :\n   data: ' + pkey + " - " + rkey);
-        client.retrieveEntity(table, pkey, rkey, function(error, result, response) {
-            if (!error) {
-                return result;
+        client.retrieveEntity(table, pkey, rkey, function(err, result, response) {
+            if (err) {
+                node.error('Error while trying to read data:' + err.toString());
+                setStatus(statusEnum.error);
+            } else {
+                node.log(result.data._);
+                setStatus(statusEnum.sent);
+                node.send(result.data._);
             }
-});
+        });
     };
 
     var disconnectFrom = function () { 
          if (client) { 
-             node.log('Disconnecting from Azure IoT Hub'); 
+             node.log('Disconnecting from Azure'); 
              client.removeAllListeners(); 
-             client.close(printResultFor('close')); 
              client = null; 
              setStatus(statusEnum.disconnected); 
          } 
@@ -64,7 +67,9 @@ module.exports = function (RED) {
 
 
     function createTable(tableName) {
-        var tableService = Client.createTableService();
+        node.log('Creating a table if not exists');
+        //var tableService = Client.createTableService('DefaultEndpointsProtocol=https;AccountName=holsml;AccountKey=/tR+1C8P30gpkl2n7EZXka+zWz4xDLl6+8iKFXGVTQvoLW1X9Y7H8YCl8ZbGkIWaXrmRtkqWe3VXK+PJS3t4+w==');
+        var tableService = Client.createTableService(clientConnectionString);
         client = tableService;
         tableService.createTableIfNotExists(tableName, function(error, result, response) {
         if (!error) {
@@ -86,27 +91,26 @@ module.exports = function (RED) {
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        this.on('input', function (msg) {
+        clientConnectionString = node.credentials.connectionstring;
 
+        this.on('input', function (msg) {
             //Converting string to JSON Object
-            //Sample string: {"tableName": "name", "action": "I" "partitionKey": "part1", "rowKey": "row1", "description": "data"}
+            //Sample string: {"tableName": "name", "action": "I" "partitionKey": "part1", "rowKey": "row1", "data": "data"}
             var messageJSON = JSON.parse(msg.payload);
-            
+            node.log('Received the input:' + messageJSON.tableName);
+            var action = messageJSON.action;
             // Sending data to Azure Table Storage
             if (action === "I") {
                 node.log('Trying to insert entity');
                 var tableselect = createTable(messageJSON.tableName);
-                sendData(tableselect, messageJSON.partitionKey, messageJSON.rowKey, messageJSON.description);
+                senddata(messageJSON.tableName, messageJSON.partitionKey, messageJSON.rowKey, messageJSON.data);
             } else if (action === "R"){
                 node.log('Trying to read entity');
                 var tableselect = createTable(messageJSON.tableName);
-                var result = readData(tableselect, messageJSON.partitionKey, messageJSON.rowKey);
-                node.send(result);
+                readdata(messageJSON.tableName, messageJSON.partitionKey, messageJSON.rowKey);
             } else if (action === "Q"){
                 node.log('Trying to query data');
             }
-
-
             setStatus(statusEnum.sending);
         });
 
@@ -119,8 +123,6 @@ module.exports = function (RED) {
     RED.nodes.registerType("azuretablestorage", AzureTableStorage, {
         credentials: {
             connectionstring: { type: "text" },
-            accountname: { type: "text"},
-            accesskey: { type: "text" }    
         },
         defaults: {
             name: { value: "Azure Table Storage" },

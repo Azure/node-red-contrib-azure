@@ -20,11 +20,13 @@ Azure node. Can be used to save Entity, retrieve Entity and query on Azure Table
  - Supports :
  
 ◦Create/Delete Tables
-◦Query/Create/Read/Update/Delete Entities
+◦Create/Read Entities
+
+Still working on -> Query, Update and Delete Entities.
 
 Use `msg.payload` to send a string with all data what you want to save to Azure Table Storage.
 
-Ex: 'msg.payload' -> {"tableName": "name", "action": "I" "partitionKey": "part1", "rowKey": "row1", "description": "data"}
+Ex: 'msg.payload' -> {"tableName": "name", "action": "I", "partitionKey": "part1", "rowKey": "row1", "data": "data"}
  
 
 
