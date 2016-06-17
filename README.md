@@ -20,14 +20,30 @@ Azure node. Can be used to save Entity, retrieve Entity and query on Azure Table
  - Supports :
  
 ◦Create/Delete Tables
-◦Create/Read Entities
+◦Create/Read/Delete/Update Entities
 
-Still working on -> Query, Update and Delete Entities.
+Still working on query Entities.
 
-Use `msg.payload` to send a string with all data what you want to save to Azure Table Storage.
 
+Use `msg.payload` to send a string with all data what you want to excute something on Azure Table Storage. Pay attention on each action variable. 
+
+## To save entity
 Ex: 'msg.payload' -> {"tableName": "name", "action": "I", "partitionKey": "part1", "rowKey": "row1", "data": "data"}
  
+##To read entity
+Ex: 'msg.payload' -> {"tableName": "name", "action": "R", "partitionKey": "part1", "rowKey": "row1"}
+
+## To delete entity
+Ex: 'msg.payload' -> {"tableName": "name", "action": "D", "partitionKey": "part1", "rowKey": "row1"}
+
+## To update entity
+Ex: 'msg.payload' -> {"tableName": "name", "action": "U", "partitionKey": "part1", "rowKey": "row1", "data": "data"}
+
+## To query entity
+Ex: 'msg.payload' -> {"tableName": "name", "action": "Q", "selectdata": "columnName", "fromcolumn": "from", "where": "where"}
+ 
+##To delete table
+Ex: 'msg.payload' -> {"tableName": "name", "action": "DT"}
 
 
 Read more about Azure Storage on <a href="https://azure.microsoft.com/pt-br/documentation/services/storage/">Azure Storage</a>.
