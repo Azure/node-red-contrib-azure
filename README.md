@@ -20,14 +20,18 @@ Azure node. Can be used to upload and download on Azure Blob Storage:
  - Supports :
  
 ◦Create/Delete Containers
-◦Create/Read/Update/Delete Blobs
+◦Create Blobs
+
+Still working on /Read/Update/Delete Blobs
 
 
-Use `msg.payload` to send a string with all data what you want to excute something on Azure Table Storage. Pay attention on each action variable. 
+Use `msg.payload` to send a file to save on Azure Blob Storage.
 
-Ex: 'msg.payload' -> {"tableName": "name", "action": "I", "partitionKey": "part1", "rowKey": "row1", "data": "data"}
+Ex: 'msg.payload' -> filename that you need to upload. Ex: filename.txt
 
+This file must to be in the same folder of Node-RED user directory - typically `~/.node-red`
 
+-----
 
 Read more about Azure Storage on <a href="https://azure.microsoft.com/pt-br/documentation/services/storage/">Azure Storage</a>.
 

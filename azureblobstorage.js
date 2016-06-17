@@ -22,7 +22,7 @@ module.exports = function (RED) {
 
     var downloadBlob = function (container, blob) {
         node.log('Downloading data from Azure Blob Storage :\n   data: ' + file);
-        clientBlobService.getBlobToStream('mycontainer', 'myblob', fs.createWriteStream('output.txt'), function(error, result, response){
+        clientBlobService.getBlobToStream(container, blob, fs.createWriteStream('output.txt'), function(error, result, response){
             if (err) {
                 node.error('Error while trying to download file:' + err.toString());
                 setStatus(statusEnum.error);
@@ -36,13 +36,11 @@ module.exports = function (RED) {
 
     var uptadeBlob = function (container, blob, file) {
         node.log('Updating Blob');
-        var container = createContainer(container);
         // 
     }
 
     var deleteBlob = function (container, blob) {
         node.log('deleting blob');
-        var blobService = Client.createBlobService(clientConnectionString);
         clientBlobService.deleteBlob(container, blob, function(err, result, response){
             if (err) {
                 node.error('Error while trying to delete blob:' + err.toString());
@@ -69,7 +67,7 @@ module.exports = function (RED) {
         node.log('Creating a container if not exists');
         var blobService = Client.createBlobService(clientConnectionString);
         clientBlobService = blobService;
-        clientBlobService.createContainerIfNotExists(clientContainerName, function(err, result, response) {
+        clientBlobService.createContainerIfNotExists(containerName, function(err, result, response) {
         if (!err) {
                 // result contains true if created; false if already exists
                 return containerName;
@@ -81,8 +79,8 @@ module.exports = function (RED) {
     }
 
     function createBlob(container, blob, file) {
-        node.log('Creating a blob if not exists');
-        var container = createContainer(container);
+        var localcontainer = createContainer(container);
+        node.log('Creating a blob if not exists on ' + container);
         clientBlobService.createBlockBlobFromLocalFile(container, blob, file, function(err, result, response) {
         if (err) {
                 node.error('Error while trying to create blob:' + err.toString());
@@ -108,11 +106,11 @@ module.exports = function (RED) {
         clientContainerName = node.credentials.container;
         clientBlobName = node.credentials.blob;
 
-
         this.on('input', function (msg) {
+            node.log()
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
-            createBlob(clientContainerName, clientBlobName, msg.payload);   
+            createBlob(clientContainerName, clientBlobName, msg.filename);   
         });
 
         this.on('close', function () {
