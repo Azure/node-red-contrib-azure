@@ -1,0 +1,44 @@
+<script type="text/javascript">
+    RED.nodes.registerType('azureblobstorage',{
+        category: 'cloud',
+        color: '#00abec',
+        defaults: {
+            name: {value:"Azure Blob Storage"},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "azurestorage.png",
+        label: function() {
+            return this.name||"Azure Blob Storage";
+        },
+        credentials: {
+            connectionstring: { type: "text" },
+            container: { type: "text" },
+            blob: { type: "text" },
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="azureblobstorage">
+    <div class="form-row">
+        <label for="node-input-connectionstring"><i class="fa fa-bookmark"></i> Storage Connection String</label>
+        <input type="text" id="node-input-connectionstring">
+    </div>
+    <div class="form-row">
+        <label for="node-input-container"><i class="fa fa-bookmark"></i> Storage Container Name</label>
+        <input type="text" id="node-input-container">
+    </div>
+    <div class="form-row">
+        <label for="node-input-blob"><i class="fa fa-bookmark"></i> Storage Blob Name</label>
+        <input type="text" id="node-input-blob">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="azureblobstorage">
+    <p>A simple node that that makes it easy to consume and manage Microsoft Azure Storage Services</p>
+</script>
+
