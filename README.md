@@ -1,7 +1,7 @@
 Node-Red node to connect to Azure DocumentDB
 ==============================
 
-<a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to Azure Storage.
+<a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to Azure DocumentDB.
 
 Some code of Azure are under MIT License.
 
@@ -15,28 +15,39 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 Usage
 -----
 
-Azure node. Can be used to upload and download on Azure Blob Storage using 2 nodes:
+Azure node. Can be used to work with Azure DocumentDB using 3 nodes:
 
  - Supports :
  
-◦Create/Delete Containers
-◦Create Blobs/Read
+◦CRUD Database
 
-Still working on Update/Delete Blobs
+Still finishing Collections and Documents Node
 
-##Save Blob
-Use `msg.payload` to send a file to save on Azure Blob Storage.
 
-Ex: 'msg.payload' -> filename that you need to upload. Ex: filename.txt
+##Database Node
+Use `msg.payload` to create, delete and list the Database name.
 
-This file must to be in the same folder of Node-RED user directory - typically `~/.node-red`
+Ex: 'msg.payload' -> {"dbname": "databaseName", "action": "C"};
 
-##Get Blob
-Use `msg.payload` to send a filename that will is save at local.
+*put "C" to crete a Database
+        - If you create a new database, the node will send as output the name of Database.
+*put "L" to list Database
+*put "D" to delete a Database
 
-Ex: 'msg.payload' -> filename. Ex: filename.txt
 
-This file will is save in the same folder of Node-RED user directory - typically `~/.node-red`
+##Collections Node
+Use `msg.payload` to create, delete and list the Collection name.
+
+Ex: 'msg.payload' -> {"dbname": "databaseName", "collName": "colletionName", "action": "C"};
+
+*put "C" to crete a Collection
+*put "L" to list Collection
+*put "D" to delete a Collection
+
+##Documents Node
+Use `msg.payload` to work with documents in DocumentDB
+
+Ex: 'msg.payload' -> Still working
 
 
 -----
