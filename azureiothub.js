@@ -129,10 +129,18 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         this.on('input', function (msg) {
 
-            //Converting string to JSON Object
-            //Sample string: {"deviceID": "name", "SAK": "jsadhjahdue7230-=13", "Protocol": "amqp", "Data": "25"}
-            var messageJSON = JSON.parse(msg.payload);
+            var messageJSON = null;
 
+            if (typeof (msg.payload) != "string") {
+                node.log("JSON");
+                messageJSON = msg.payload;
+            } else {
+                node.log("String");
+                //Converting string to JSON Object
+                //Sample string: {"deviceID": "name", "SAK": "jsadhjahdue7230-=13", "Protocol": "amqp", "Data": "25"}
+                var messageJSON = JSON.parse(msg.payload);
+            }
+            
             //Creating connectionString
             //Sample
             //HostName=sample.azure-devices.net;DeviceId=sampleDevice;SharedAccessKey=wddU//P8fdfbSBDbIdghZAoSSS5gPhIZREhy3Zcv0JU=
