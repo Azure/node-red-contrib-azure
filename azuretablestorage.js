@@ -176,7 +176,7 @@ module.exports = function (RED) {
                 node.log("String");
                 //Converting string to JSON Object if msg.payload is String
                 //Sample string: {"tableName": "name", "action": "I" "partitionKey": "part1", "rowKey": "row1", "data": "data"}
-                var messageJSON = JSON.parse(msg.payload);
+                messageJSON = JSON.parse(msg.payload);
             }
 
             entityClass = messageJSON;
