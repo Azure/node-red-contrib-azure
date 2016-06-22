@@ -138,7 +138,7 @@ module.exports = function (RED) {
                 node.log("String");
                 //Converting string to JSON Object
                 //Sample string: {"deviceID": "name", "SAK": "jsadhjahdue7230-=13", "Protocol": "amqp", "Data": "25"}
-                var messageJSON = JSON.parse(msg.payload);
+                messageJSON = JSON.parse(msg.payload);
             }
             
             //Creating connectionString
