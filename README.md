@@ -19,9 +19,9 @@ Azure node. Can be used to work with Azure DocumentDB using 3 nodes:
 
  - Supports :
  
-◦CRUD Database
+◦CRUD Database and Collections
 
-Still finishing Collections and Documents Node
+Still finishing Documents Node
 
 
 ##Database Node
@@ -47,11 +47,19 @@ Ex: 'msg.payload' -> {"dbname": "databaseName", "collName": "colletionName", "ac
 ##Documents Node
 Use `msg.payload` to work with documents in DocumentDB
 
-Ex: 'msg.payload' -> Still working
+Ex: 'msg.payload' -> {"dbname": "databaseName", "collName": "colletionName", "action": "C", "doc": "*"};
+
+*** Trying to figure out if is better to send a doc as JSON, local file or address...
+
+*put "C" to crete a Document
+*put "L" to list Documents
+*put "D" to delete a Document
+*put "R" to read a Document
+*put "Q" to query a document
 
 
 -----
 
-Read more about Azure Storage on <a href="https://azure.microsoft.com/pt-br/documentation/services/storage/">Azure Storage</a>.
+Read more about Azure DocumentDB on <a href="https://azure.microsoft.com/pt-br/documentation/services/documentdb/">Azure DocumentDB</a>.
 
 
