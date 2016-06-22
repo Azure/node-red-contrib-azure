@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('azuretablestorage',{
+    RED.nodes.registerType('Table Storage',{
         category: 'cloud',
         color: '#00abec',
         defaults: {
@@ -17,7 +17,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="azuretablestorage">
+<script type="text/x-red" data-template-name="Table Storage">
     <div class="form-row">
         <label for="node-input-connectionstring"><i class="fa fa-bookmark"></i> Storage Connection String</label>
         <input type="text" id="node-input-connectionstring">
@@ -28,7 +28,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="azuretablestorage">
+<script type="text/x-red" data-help-name="Table Storage">
     <p>A simple node that that makes it easy to consume and manage Microsoft Azure Storage Services</p>
 </script>
 
