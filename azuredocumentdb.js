@@ -8,6 +8,8 @@ module.exports = function (RED) {
     var databaseUrl = "";
     var collectionName = "";
     var collectionUrl = "";
+    var documentName = "";
+    var documentJSON = "";
     var messageJSON = "";
     var node = null;
     var nodeConfig = null;
@@ -81,7 +83,7 @@ module.exports = function (RED) {
 
 //---------------------------------------------------------- COLLECTIONS--------------------------------------------------------------------
 function getCollection() {
-    console.log(`Getting collection:\n${collectionName}\n`);
+    node.log(`Getting collection:\n${collectionName}\n`);
     var colldef = {id : collectionName};
     return new Promise((resolve, reject) => {
         client.readCollection(collectionUrl, (err, result) => {
@@ -139,6 +141,101 @@ function readCollectionById(collectionId, callback) {
         }
     });
 }
+
+//---------------------------------------------------------- Documents--------------------------------------------------------------------
+function getDocument(document) {
+    var documentUrl = `${collectionUrl}/docs/${documentName}`;
+    node.log(`Getting document:\n${documentName}\n`);
+
+    return new Promise((resolve, reject) => {
+        node.log("trying read");
+        client.readDocument(documentUrl, (err, result) => {
+            node.log("reading");
+            if (err) {
+                node.log("error");
+                if (err.code == HttpStatusCodes.NOTFOUND) {
+                    node.log("creating");
+                    client.createDocument(collectionUrl, document, (err, created) => {
+                        node.log("try to create");
+                        if (err) reject(err)
+                        else resolve(created);
+                    });
+                } else {
+                    reject(err);
+                }
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+function deleteDocument(document) {
+    var documentUrl = `${collectionUrl}/docs/${documentName}`;
+    node.log(`Deleting document:\n${documentName}\n`);
+
+    return new Promise((resolve, reject) => {
+        client.deleteDocument(documentUrl, (err, result) => {
+            if (err) reject(err);
+            else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+function replaceDocument(document) {
+    var documentUrl = `${collectionUrl}/docs/${documentName}`;
+    node.log(`Replacing document:\n${documentName}\n`);
+
+    return new Promise((resolve, reject) => {
+        client.replaceDocument(documentUrl, document, (err, result) => {
+            if (err) reject(err);
+            else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+function queryDocuments(querystring) {
+    node.log(`Querying collection through index:\n${collectionName}`);
+    querystring = querystring.replace("'", "\"");
+    querystring = querystring.replace("'", "\"");
+    node.log("Query string -> " + querystring);
+
+    return new Promise((resolve, reject) => {
+        client.queryDocuments(
+            collectionUrl,
+            querystring
+        ).toArray((err, results) => {
+            if (err) reject(err)
+            else {
+                node.log("Results -> " + results);
+                for (var queryResult of results) {
+                    var resultString = JSON.stringify(queryResult);
+                    node.log("Query returned " + resultString);
+                }
+                node.log("Query OK");
+                resolve(results);
+            }
+        });
+    });
+};
+
+function listDocuments(collLink, callback) {
+    var queryIterator = client.readDocuments(collectionUrl).toArray(function (err, docs) {
+        if (err) {
+            setStatus(statusEnum.error);
+            node.error('Completed with error ' +JSON.stringify(err));
+            node.log('Completed with error ' +JSON.stringify(err));
+        } else {
+            node.log(docs.length + ' Documents found');
+            callback(docs);
+        }
+    });
+}
+
 
 //---------------------------------------------------------- GENERAL--------------------------------------------------------------------
     var disconnectFrom = function () { 
@@ -270,7 +367,7 @@ function readCollectionById(collectionId, callback) {
             switch (action) {
                 case "C":
                     node.log('Trying to create Collection');
-                    getDatabase().then(() => getCollection()).then((resolve) => { 
+                    getCollection().then((resolve) => { 
                         node.log('Completed successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
                         node.send(collectionName); 
@@ -326,7 +423,7 @@ function readCollectionById(collectionId, callback) {
         });
     }
 
-    function DocumentDDocuments(config) {
+    function DocumentDBDocuments(config) {
         // Store node for further use
         node = this;
         nodeConfig = config;
@@ -348,7 +445,8 @@ function readCollectionById(collectionId, callback) {
             } else {
                 node.log("String");
                 //Converting string to JSON Object
-                //Sample string: {"dbname": "name", "collName": "colletionName", "action": "C", "doc" : "doc address? doc as JSON? doc at Local?"}
+                //Sample string: {"dbname": "name", "collName": "colletionName", "action": "C", "docID" : "ID", "doc": {"firstname": "Lucas", "lastname": "Humenhuk"}}
+                //Sample string to QUERY : {"dbname": "name", "collName": "colletionName", "action": "Q", "query" : "SELECT VALUE r.address FROM root r WHERE r.firstName = 'Lucas'"}
                 messageJSON = JSON.parse(msg.payload);
             }
             var action = messageJSON.action;
@@ -356,26 +454,77 @@ function readCollectionById(collectionId, callback) {
             {
                 dbName = messageJSON.dbname;
                 collectionName = messageJSON.collName;
+                documentName = messageJSON.docID;
                 databaseUrl = `dbs/${dbName}`;
                 collectionUrl = `${databaseUrl}/colls/${collectionName}`;
+                documentJSON = messageJSON.doc;
             }
             // Sending action to Azure DocumentDB
             setStatus(statusEnum.sending);
             switch (action) {
                 case "C":
                     node.log('Trying to create Document');
+                    //node.log(JSON.parse(messageJSON.doc));
+                    getDocument(messageJSON.doc).then((resolve) => { 
+                       node.log('Completed successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent);
+                        node.send('Completed successfully ' + JSON.stringify(resolve));  
+                    }).catch((error) => { 
+                        setStatus(statusEnum.error);
+                        node.error('Completed with error ' +JSON.stringify(error));
+                       node.log('Completed with error ' +JSON.stringify(error));
+                    });
                     break;
                 case "L":
                     node.log('Trying to list Documents');
+                    var listNames = [];
+                    listDocuments(collectionUrl, function (docs) {
+                        setStatus(statusEnum.sent);
+                        if (docs.length == 1) {
+                            node.send(docs[0].id)
+                        } else {
+                            for (var i = 0; i < docs.length; i++) {
+                                listNames.push(docs[i].id);
+                            }
+                            node.send(JSON.stringify(listNames));
+                        }
+                    })
                     break;
                 case "D":
                     node.log('Trying to delete Documents');
+                    deleteDocument(messageJSON.doc).then((resolve) => { 
+                        node.log('Delete successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent);
+                        node.send('Delete successfully ' + JSON.stringify(resolve)); 
+                    }).catch((error) => { 
+                        setStatus(statusEnum.error);
+                        node.error('Delete with error ' +JSON.stringify(error));
+                        node.log('Delete with error ' +JSON.stringify(error));
+                });
                     break;
-                case "R":
-                    node.log('Trying to read document');
+                case "U":
+                    node.log('Trying to update document');
+                    replaceDocument(messageJSON.doc).then((resolve) => { 
+                        node.log('Updated successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent);
+                        node.send('Updated successfully ' + JSON.stringify(resolve)); 
+                    }).catch((error) => { 
+                        setStatus(statusEnum.error);
+                        node.error('Updated with error ' +JSON.stringify(error));
+                        node.log('Updated with error ' +JSON.stringify(error));
+                });
                     break;
                 case "Q":
                     node.log('Trying to query document');
+                    queryDocuments(messageJSON.query).then((resolve) => { 
+                        node.log('Query successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent);
+                        node.send('Query successfully ' + JSON.stringify(resolve)); 
+                    }).catch((error) => { 
+                        setStatus(statusEnum.error);
+                        node.error('Query with error ' +JSON.stringify(error));
+                        node.log('Query with error ' +JSON.stringify(error));
+                });
                     break;
                 default:
                     node.log('action was not detected');
@@ -424,7 +573,7 @@ function readCollectionById(collectionId, callback) {
     });
 
 
-    // Helper function to print results in the console
+    // Helper function to print results in the node
     function printResultFor(op) {
         return function printResult(err, res) {
             if (err) node.error(op + ' error: ' + err.toString());

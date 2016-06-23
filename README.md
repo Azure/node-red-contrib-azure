@@ -20,8 +20,9 @@ Azure node. Can be used to work with Azure DocumentDB using 3 nodes:
  - Supports :
  
 ◦CRUD Database and Collections
+◦Create/List and Query Documents
 
-Still finishing Documents Node
+Still finishing Update and Delete Documents
 
 
 ##Database Node
@@ -29,10 +30,13 @@ Use `msg.payload` to create, delete and list the Database name.
 
 Ex: 'msg.payload' -> {"dbname": "databaseName", "action": "C"};
 
-*put "C" to crete a Database
+
+- put "C" to crete a Database
         - If you create a new database, the node will send as output the name of Database.
-*put "L" to list Database
-*put "D" to delete a Database
+
+- put "L" to list Database
+
+- put "D" to delete a Database
 
 
 ##Collections Node
@@ -40,22 +44,24 @@ Use `msg.payload` to create, delete and list the Collection name.
 
 Ex: 'msg.payload' -> {"dbname": "databaseName", "collName": "colletionName", "action": "C"};
 
-*put "C" to crete a Collection
-*put "L" to list Collection
-*put "D" to delete a Collection
+- put "C" to crete a Collection
+- put "L" to list Collection
+- put "D" to delete a Collection
 
 ##Documents Node
 Use `msg.payload` to work with documents in DocumentDB
 
 Ex: 'msg.payload' -> {"dbname": "databaseName", "collName": "colletionName", "action": "C", "doc": "*"};
 
-*** Trying to figure out if is better to send a doc as JSON, local file or address...
+- put "C" to crete a Document
+        - * Doc as JSON -> {"name": "Lucas", "lastname": "Humenhuk"}
+- put "L" to list Documents
+- put "D" to delete a Document
+- put "U" to update a Document
+- put "Q" to query a document
+        - To query a document. Ex: 'SELECT VALUE r.address FROM root r WHERE r.firstname = "Lucas"'
 
-*put "C" to crete a Document
-*put "L" to list Documents
-*put "D" to delete a Document
-*put "R" to read a Document
-*put "Q" to query a document
+
 
 
 -----
