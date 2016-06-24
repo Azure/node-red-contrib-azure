@@ -20,9 +20,7 @@ Azure node. Can be used to work with Azure DocumentDB using 3 nodes:
  - Supports :
  
 ◦CRUD Database and Collections
-◦Create/List and Query Documents
-
-Still finishing Update and Delete Documents
+◦Create/List/Update/Delete and Query Documents
 
 
 ##Database Node

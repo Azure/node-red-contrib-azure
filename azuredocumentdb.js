@@ -8,8 +8,6 @@ module.exports = function (RED) {
     var databaseUrl = "";
     var collectionName = "";
     var collectionUrl = "";
-    var documentName = "";
-    var documentJSON = "";
     var messageJSON = "";
     var node = null;
     var nodeConfig = null;
@@ -144,8 +142,8 @@ function readCollectionById(collectionId, callback) {
 
 //---------------------------------------------------------- Documents--------------------------------------------------------------------
 function getDocument(document) {
-    var documentUrl = `${collectionUrl}/docs/${documentName}`;
-    node.log(`Getting document:\n${documentName}\n`);
+    var documentUrl = `${collectionUrl}/docs/${document.id}`;
+    node.log(`Getting document:\n${document.id}\n`);
 
     return new Promise((resolve, reject) => {
         node.log("trying read");
@@ -171,8 +169,8 @@ function getDocument(document) {
 };
 
 function deleteDocument(document) {
-    var documentUrl = `${collectionUrl}/docs/${documentName}`;
-    node.log(`Deleting document:\n${documentName}\n`);
+    var documentUrl = `${collectionUrl}/docs/${document.id}`;
+    node.log(`Deleting document:\n${document.id}\n`);
 
     return new Promise((resolve, reject) => {
         client.deleteDocument(documentUrl, (err, result) => {
@@ -185,8 +183,8 @@ function deleteDocument(document) {
 };
 
 function replaceDocument(document) {
-    var documentUrl = `${collectionUrl}/docs/${documentName}`;
-    node.log(`Replacing document:\n${documentName}\n`);
+    var documentUrl = `${collectionUrl}/docs/${document.id}`;
+    node.log(`Replacing document:\n${document.id}\n`);
 
     return new Promise((resolve, reject) => {
         client.replaceDocument(documentUrl, document, (err, result) => {
@@ -436,6 +434,7 @@ function listDocuments(collLink, callback) {
         this.on('input', function (msg) {
             //working with collections
             client = new DocumentDBClient(dbendpoint, { "masterKey": dbkey });
+            node.log("Client started.");
 
             var messageJSON = null;
 
@@ -445,20 +444,15 @@ function listDocuments(collLink, callback) {
             } else {
                 node.log("String");
                 //Converting string to JSON Object
-                //Sample string: {"dbname": "name", "collName": "colletionName", "action": "C", "docID" : "ID", "doc": {"firstname": "Lucas", "lastname": "Humenhuk"}}
+                //Sample string: {"dbname": "name", "collName": "colletionName", "action": "C", "doc": {"id": "lucas.1", "firstname": "Lucas", "lastname": "Humenhuk"}}
                 //Sample string to QUERY : {"dbname": "name", "collName": "colletionName", "action": "Q", "query" : "SELECT VALUE r.address FROM root r WHERE r.firstName = 'Lucas'"}
                 messageJSON = JSON.parse(msg.payload);
             }
             var action = messageJSON.action;
-            if  (action != "L")
-            {
-                dbName = messageJSON.dbname;
-                collectionName = messageJSON.collName;
-                documentName = messageJSON.docID;
-                databaseUrl = `dbs/${dbName}`;
-                collectionUrl = `${databaseUrl}/colls/${collectionName}`;
-                documentJSON = messageJSON.doc;
-            }
+            dbName = messageJSON.dbname;
+            collectionName = messageJSON.collName;
+            databaseUrl = `dbs/${dbName}`;
+            collectionUrl = `${databaseUrl}/colls/${collectionName}`;
             // Sending action to Azure DocumentDB
             setStatus(statusEnum.sending);
             switch (action) {
