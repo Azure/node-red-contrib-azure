@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-azure-iot-hub",
   "description": "Connector to azure on Node-Red",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -10,7 +10,8 @@
          "azure-iot-device-amqp"   : "^1.0.4", 
          "azure-iot-device-amqp-ws": "^1.0.4", 
          "azure-iot-device-http"   : "^1.0.4", 
-         "azure-iot-device-mqtt"   : "^1.0.4" 
+         "azure-iot-device-mqtt"   : "^1.0.4",
+         "azure-iothub": "^1.0.4" 
      }, 
   "keywords":["node-red", "Azure", "Azure IoT"],
   "node-red" :{

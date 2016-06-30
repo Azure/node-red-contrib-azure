@@ -1,4 +1,4 @@
-Node-Red connector to Azure IoT Hub (many devices)
+node-red-contrib-azure-iot-hub
 ==============================
 
 <a href="http://nodered.org" target="_new">Node-RED</a> nodes to talk to Azure IoT Hub.
@@ -17,7 +17,7 @@ Run the following command in your Node-RED user directory - typically `~/.node-r
 Usage
 -----
 
-Provides a nodes, fork from original Microsoft's node, that you can send data to Azure IoT HUb, but you pass deviceID and SharedAccessKey thru paylod to connect more than one device into the same node.
+Provides two nodes, one of them,  ork from original Microsoft's node, that you can send data to Azure IoT Hub, but you pass deviceID and SharedAccessKey thru paylod to connect more than one device into the same node. And one to create a new device into IoT Hub.
 
 ### Input
 
@@ -31,6 +31,15 @@ Use `msg.payload` to send a string with all data what you want to send to Azure,
 Ex: 'msg.payload' -> {"deviceID": "testenode1", "SAK": "cw3nniq77BbjpOCDLqb7xEFTU509HeR6Ki1NwR20jj0=", "Protocol": "amqp", "Data": "25"};
  
 Ex: 'msg.payload' using JSON in Data -> {"deviceID": "testenode1", "SAK": "cw3nniq77BbjpOCDLqb7xEFTU509HeR6Ki1NwR20jj0=", "Protocol": "amqp", "Data": "{tem: 25, wind: 20}"}
+
+
+### Registry Node
+
+Azure node to registry previously you device.
+
+Use `msg.payload` to send a deviceID, registry and receive a Shared Access Key to connecto to Azure IoT Hub.
+
+Ex: 'msg.payload' -> {"deviceID": "testenode1"};
 
 
 Read more about Azure IoT Hub on <a href="https://azure.microsoft.com/en-us/documentation/services/iot-hub/">Azure IoT Hub</a>.

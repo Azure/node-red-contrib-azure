@@ -1,6 +1,7 @@
 module.exports = function (RED) {
 
     var Client = require('azure-iot-device').Client;
+    var Registry = require('azure-iothub').Registry;
 
     var Protocols = {
         amqp: require('azure-iot-device-amqp').Amqp,
@@ -41,6 +42,7 @@ module.exports = function (RED) {
                 setStatus(statusEnum.error);
             } else {
                 node.log('Message sent.');
+                node.send("Message sent.");
                 setStatus(statusEnum.sent);
             }
         });
@@ -64,6 +66,20 @@ module.exports = function (RED) {
             sendData(message);
         }
     };
+
+    function registryDevice(deviceIDJSON) {
+        var registry = Registry.fromConnectionString(node.credentials.connectionString);
+        registry.create(deviceIDJSON, function (err, device) {
+            if (err) {
+                node.error('Error while trying to create a new device: ' + err.toString());
+                setStatus(statusEnum.error);
+            } else {
+                node.log("Device created: " + JSON.stringify(device));
+                node.log("Device ID: " + device.deviceId + " - primaryKey: " + device.authentication.SymmetricKey.primaryKey + " - secondaryKey: " + device.authentication.SymmetricKey.secondaryKey);
+                node.send("Device ID: " + device.deviceId + " - primaryKey: " + device.authentication.SymmetricKey.primaryKey + " - secondaryKey: " + device.authentication.SymmetricKey.secondaryKey);
+            }
+         });
+    }
 
     var connectToIoTHub = function (pendingMessage) {
         node.log('Connecting to Azure IoT Hub:\n   Protocol: ' + newProtocol + '\n   Connection string :' + newConnectionString);
@@ -157,6 +173,37 @@ module.exports = function (RED) {
 
     }
 
+    function IoTHubRegistry(config) {
+        // Store node for further use
+        node = this;
+        nodeConfig = config;
+
+        // Create the Node-RED node
+        RED.nodes.createNode(this, config);
+        this.on('input', function (msg) {
+
+            var messageJSON = null;
+
+            if (typeof (msg.payload) != "string") {
+                node.log("JSON");
+                messageJSON = msg.payload;
+            } else {
+                node.log("String");
+                //Converting string to JSON Object
+                //Sample string: {"deviceID": "name"}
+                messageJSON = JSON.parse(msg.payload);
+            }
+
+            // Registring Device in Azure IoT Hub
+            registryDevice(messageJSON);
+        });
+
+        this.on('close', function () {
+            disconnectFromIoTHub(this);
+        });
+
+    }
+
     // Registration of the node into Node-RED
     RED.nodes.registerType("azureiothub", AzureIoTHubNode, {
         credentials: {
@@ -165,6 +212,16 @@ module.exports = function (RED) {
         defaults: {
             name: { value: "Azure IoT Hub" },
             protocol: { value: "amqp" }
+        }
+    });
+
+    // Registration of the node into Node-RED
+    RED.nodes.registerType("azureiothubregistry", IoTHubRegistry, {
+        credentials: {
+            connectionString: { type: "text" }
+        },
+        defaults: {
+            name: { value: "Azure IoT Hub Registry" },
         }
     });
 
