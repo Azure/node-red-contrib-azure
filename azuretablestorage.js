@@ -3,7 +3,8 @@ module.exports = function (RED) {
     var Client = require('azure-storage');
     var globaltable = null;
     var clientTableService = null;
-    var clientConnectionString = "";
+    var clientAccountName = "";
+    var clientAccountKey = "";
     var node = null;
     var nodeConfig = null;
 
@@ -28,7 +29,7 @@ module.exports = function (RED) {
             var entity = {
                 PartitionKey: entGen.String(entityClass.partitionKey),
                 RowKey: entGen.String(entityClass.rowKey),
-                data: entGen.String(entityClass.data),
+                data: entGen.String(JSON.stringify(entityClass.data)),
             };
             node.log('entity created successfully');
             clientTableService.insertEntity(entityClass.tableName, entity, function(err, result, response) {
@@ -141,7 +142,7 @@ module.exports = function (RED) {
 
     function createTable(callback) {
         node.log('Creating a table if not exists');
-        var tableService = Client.createTableService(clientConnectionString);
+        var tableService = Client.createTableService(clientAccountName, clientAccountKey);
         clientTableService = tableService;
         tableService.createTableIfNotExists(entityClass.tableName, function(error, result, response) {
         if (!error) {
@@ -163,7 +164,8 @@ module.exports = function (RED) {
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        clientConnectionString = node.credentials.connectionstring;
+        clientAccountName = node.credentials.accountname
+        clientAccountKey = node.credentials.key;
 
         this.on('input', function (msg) {
 
@@ -226,7 +228,8 @@ module.exports = function (RED) {
     // Registration of the node into Node-RED
     RED.nodes.registerType("Table Storage", AzureTableStorage, {
         credentials: {
-            connectionstring: { type: "text" },
+            accountname: { type: "text" },
+            key: { type: "text" },
         },
         defaults: {
             name: { value: "Azure Table Storage" },

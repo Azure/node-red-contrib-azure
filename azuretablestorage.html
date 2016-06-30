@@ -12,15 +12,20 @@
             return this.name||"Azure Table Storage";
         },
         credentials: {
-            connectionstring: { type: "text" },
+            accountname: { type: "text" },
+            key: { type: "text" },
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="Table Storage">
     <div class="form-row">
-        <label for="node-input-connectionstring"><i class="fa fa-bookmark"></i> Storage Connection String</label>
-        <input type="text" id="node-input-connectionstring">
+        <label for="node-input-accountname"><i class="fa fa-bookmark"></i> Storage Account Name</label>
+        <input type="text" id="node-input-accountname">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="fa fa-bookmark"></i> Storage Account Key</label>
+        <input type="text" id="node-input-key">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
