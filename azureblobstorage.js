@@ -3,7 +3,8 @@ module.exports = function (RED) {
     var Client = require('azure-storage');
     var fs = require('fs');
     var clientBlobService = null;
-    var clientConnectionString = "";
+    var clientAccountName = "";
+    var clientAccountKey = "";
     var clientContainerName = "";
     var clientBlobName = "";
     var node = null;
@@ -65,7 +66,7 @@ module.exports = function (RED) {
 
      function createContainer(containerName) {
         node.log('Creating a container if not exists');
-        var blobService = Client.createBlobService(clientConnectionString);
+        var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
         clientBlobService = blobService;
         clientBlobService.createContainerIfNotExists(containerName, function(err, result, response) {
         if (!err) {
@@ -102,7 +103,8 @@ module.exports = function (RED) {
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        clientConnectionString = node.credentials.connectionstring;
+        clientAccountName = node.credentials.accountname
+        clientAccountKey = node.credentials.key;
         clientContainerName = node.credentials.container;
         clientBlobName = node.credentials.blob;
 
@@ -125,7 +127,8 @@ module.exports = function (RED) {
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        clientConnectionString = node.credentials.connectionstring;
+        clientAccountName = node.credentials.accountname
+        clientAccountKey = node.credentials.key;
         clientContainerName = node.credentials.container;
         clientBlobName = node.credentials.blob;
 
@@ -145,7 +148,8 @@ module.exports = function (RED) {
     // Registration of the node into Node-RED
     RED.nodes.registerType("Save Blob", AzureBlobStorage, {
         credentials: {
-            connectionstring: { type: "text" },
+            accountname: { type: "text" },
+            key: { type: "text" },
             container: { type: "text" },
             blob: { type: "text" },
         },
@@ -157,7 +161,8 @@ module.exports = function (RED) {
     // Registration of the node into Node-RED to download
     RED.nodes.registerType("Get Blob", AzureBlobStorageDownload, {
         credentials: {
-            connectionstring: { type: "text" },
+            accountname: { type: "text" },
+            key: { type: "text" },
             container: { type: "text" },
             blob: { type: "text" },
         },
