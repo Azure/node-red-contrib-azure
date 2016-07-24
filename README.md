@@ -30,7 +30,7 @@ Use `msg.payload` to send a string with all data what you want to excute somethi
 ## To save entity
 Ex: 'msg.payload' -> {"tableName": "name", "action": "I", "partitionKey": "part1", "rowKey": "row1", "data": "data"}
 
-- If you send data as JSON, the node will convert to String and save into Table Storage in a column named "data".
+- If you send data as JSON, the node will save each key as column.
  
 ##To read entity
 Ex: 'msg.payload' -> {"tableName": "name", "action": "R", "partitionKey": "part1", "rowKey": "row1"}
