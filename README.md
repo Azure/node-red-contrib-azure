@@ -12,13 +12,13 @@ This node allows you to send messages to your Azure IoT Hub.  It has the followi
 ```
 {
   "deviceId": "testenode1",
-  "sharedAccessKey": "cw3nniq77BbjpOCDLqb7xEFTU509HeR6Ki1NwR20jj0=",
+  "key": "cw3nniq77BbjpOCDLqb7xEFTU509HeR6Ki1NwR20jj0=",
   "protocol": "amqp",
   "data": "{tem: 25, wind: 20}"
 }
 ```
 - deviceId is your device's unique id.
-- sharedAccessKey is your device's primary or secondary key.
+- key is your device's primary or secondary key.
 - protocol options are: amqp, amqpws, mqtt or http.
 - data can either be a plain string or string wrapped JSON.
 
@@ -59,7 +59,7 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
     ![](images/import-nodes.png)
 
     ```
-    [{"id":"e092747f.d2fb08","type":"azureiothubregistry","z":"a625ca19.b34ce8","name":"Azure IoT Hub Registry","x":310,"y":40,"wires":[["4c1b62c2.1681bc"]]},{"id":"8877c5f0.e15828","type":"inject","z":"a625ca19.b34ce8","name":"Payload","topic":"","payload":"{\"deviceId\": \"device146\"}","payloadType":"json","repeat":"","crontab":"","once":false,"x":100,"y":40,"wires":[["e092747f.d2fb08"]]},{"id":"4c1b62c2.1681bc","type":"debug","z":"a625ca19.b34ce8","name":"Log","active":true,"console":"false","complete":"true","x":510,"y":40,"wires":[]},{"id":"a3b3f737.a7a428","type":"debug","z":"a625ca19.b34ce8","name":"Log","active":true,"console":"false","complete":"true","x":510,"y":100,"wires":[]},{"id":"2be1c658.c9bbea","type":"azureiothub","z":"a625ca19.b34ce8","name":"Azure IoT Hub","protocol":"amqp","x":320,"y":100,"wires":[["a3b3f737.a7a428"]]},{"id":"600a3eb0.2b238","type":"inject","z":"a625ca19.b34ce8","name":"Payload","topic":"","payload":"{   \"deviceID\": \"device145\",   \"SAK\": \"Qmq2SSe4CzuB5N0v2FvfV3LAE8OKf2rWj6IQPx+AU3w=\",   \"Protocol\": \"amqp\",   \"Data\": \"{tem: 25, wind: 20}\" }","payloadType":"json","repeat":"","crontab":"","once":false,"x":100,"y":100,"wires":[["2be1c658.c9bbea"]]}]
+    [{"id":"e092747f.d2fb08","type":"azureiothubregistry","z":"a625ca19.b34ce8","name":"Azure IoT Hub Registry","x":370,"y":120,"wires":[["4c1b62c2.1681bc"]]},{"id":"8877c5f0.e15828","type":"inject","z":"a625ca19.b34ce8","name":"Register Payload","topic":"","payload":"{\"deviceId\": \"device146\"}","payloadType":"json","repeat":"","crontab":"","once":false,"x":140,"y":120,"wires":[["e092747f.d2fb08"]]},{"id":"4c1b62c2.1681bc","type":"debug","z":"a625ca19.b34ce8","name":"Log","active":true,"console":"false","complete":"true","x":650,"y":120,"wires":[]},{"id":"a3b3f737.a7a428","type":"debug","z":"a625ca19.b34ce8","name":"Log","active":true,"console":"false","complete":"true","x":650,"y":60,"wires":[]},{"id":"2be1c658.c9bbea","type":"azureiothub","z":"a625ca19.b34ce8","name":"Azure IoT Hub","protocol":"amqp","x":340,"y":60,"wires":[["a3b3f737.a7a428"]]},{"id":"600a3eb0.2b238","type":"inject","z":"a625ca19.b34ce8","name":"Send Payload","topic":"","payload":"{ \"deviceId\": \"device145\", \"key\": \"Qmq2SSe4CzuB5N0v2FvfV3LAE8OKf2rWj6IQPx+AU3w=\", \"protocol\": \"amqp\", \"data\": \"{tem: 25, wind: 20}\" }","payloadType":"json","repeat":"","crontab":"","once":false,"x":130,"y":60,"wires":[["2be1c658.c9bbea"]]}]
     ```
 4. Double-click the Register Payload node
 
@@ -90,7 +90,7 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
 
 ### Send Data to Azure IoT Hub
 
-1. Double-click on the Send Payload node and modify the JSON in the Payload field to contain your deviceId, sharedAccessKey, protocol and data.
+1. Double-click on the Send Payload node and modify the JSON in the Payload field to contain your deviceId, key, protocol and data.
 
     ![](images/send-payload-node.png)
 

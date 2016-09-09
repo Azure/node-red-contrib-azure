@@ -153,18 +153,18 @@ module.exports = function (RED) {
             } else {
                 node.log("String");
                 //Converting string to JSON Object
-                //Sample string: {"deviceID": "name", "SAK": "jsadhjahdue7230-=13", "Protocol": "amqp", "Data": "25"}
+                //Sample string: {"deviceId": "name", "key": "jsadhjahdue7230-=13", "protocol": "amqp", "data": "25"}
                 messageJSON = JSON.parse(msg.payload);
             }
             
             //Creating connectionString
             //Sample
             //HostName=sample.azure-devices.net;DeviceId=sampleDevice;SharedAccessKey=wddU//P8fdfbSBDbIdghZAoSSS5gPhIZREhy3Zcv0JU=
-            newConnectionString = "HostName=" + node.credentials.hostname + ";DeviceId=" + messageJSON.deviceID + ";SharedAccessKey=" + messageJSON.SAK
-            newProtocol = messageJSON.Protocol;
+            newConnectionString = "HostName=" + node.credentials.hostname + ";DeviceId=" + messageJSON.deviceId + ";SharedAccessKey=" + messageJSON.key
+            newProtocol = messageJSON.protocol;
             
             // Sending data to Azure IoT Hub Hub using specific connectionString
-            sendMessageToIoTHub(messageJSON.Data, nodeConfigUpdated(newConnectionString, newProtocol));
+            sendMessageToIoTHub(messageJSON.data, nodeConfigUpdated(newConnectionString, newProtocol));
         });
 
         this.on('close', function () {
@@ -190,7 +190,7 @@ module.exports = function (RED) {
             } else {
                 node.log("String");
                 //Converting string to JSON Object
-                //Sample string: {"deviceID": "name"}
+                //Sample string: {"deviceId": "name"}
                 messageJSON = JSON.parse(msg.payload);
             }
 
