@@ -139,5 +139,6 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
 
 
 ### References
-You can read more about Azure IoT Hub [here](https://azure.microsoft.com/en-us/documentation/services/iot-hub/).
+You can read more about Azure Storage [here](https://azure.microsoft.com/pt-br/documentation/services/storage/).
+
 
