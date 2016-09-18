@@ -5,7 +5,7 @@ node-red-contrib-azure-blob-storage is a <a href="http://nodered.org" target="_n
 
 It contains one Node-RED cloud node: **Azure Blob Storage**
 
-![](images/flow-nodes.png)
+![](images/flow-nodes.PNG)
 
 #### Azure Blob Storage
 
@@ -44,24 +44,24 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
 
 3. Paste the following code into the "Import nodes" dialog
 
-    ![](images/import-nodes.png)
+    ![](images/import-nodes.PNG)
 
     ```
     [{"id":"ead7871a.8172c8","type":"inject","z":"5e92f737.c60d68","name":"Payload","topic":"","payload":"DocumentTest.txt","payloadType":"str","repeat":"","crontab":"","once":false,"x":436,"y":273,"wires":[["b0dbc35f.28665"]]},{"id":"fdab4f1f.0cab","type":"debug","z":"5e92f737.c60d68","name":"Log","active":true,"console":"false","complete":"true","x":846,"y":273,"wires":[]},{"id":"f65e9c4e.e7afb","type":"debug","z":"5e92f737.c60d68","name":"Log","active":true,"console":"false","complete":"true","x":846,"y":333,"wires":[]},{"id":"b3f32ebe.8a2ee","type":"inject","z":"5e92f737.c60d68","name":"Payload","topic":"","payload":"DocumentTest.txt","payloadType":"str","repeat":"","crontab":"","once":false,"x":436,"y":333,"wires":[["e6748f3.2163b7"]]},{"id":"b0dbc35f.28665","type":"Save Blob","z":"5e92f737.c60d68","name":"Azure Save Blob Storage","x":646,"y":274,"wires":[["fdab4f1f.0cab"]]},{"id":"e6748f3.2163b7","type":"Get Blob","z":"5e92f737.c60d68","name":"Azure Get Blob Storage","x":647,"y":333,"wires":[["f65e9c4e.e7afb"]]}]
     ```
 4. Double-click the Save Payload node
 
-    ![](images/save-payload.png)
+    ![](images/save-payload.PNG)
 
 5. Enter your filename into the Payload field and click Done. Check "Inject once at start?" to send that file when you click Deploy.
 
-    ![](images/save-payload-node.png)
+    ![](images/save-payload-node.PNG)
 
 6. Double-click the Azure Save Blob Storage node, enter your Storage Account Name, Storage Account Key and your desired Container Name and Blob Name. Now click Done.
 
-    ![](images/save-blob-node-selected.png) 
+    ![](images/save-blob-node-selected.PNG) 
     
-    ![](images/save-blob-node.png)
+    ![](images/save-blob-node.PNG)
 
 7. Click Deploy
 
@@ -69,28 +69,28 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
 
 8. Click the square button on the left side of the Save Payload node.
     
-    ![](images/save-payload.png)
+    ![](images/save-payload.PNG)
 
 9. Click on the debug tab to your right and you'll see the output confirming that your data was sent.
 
-    ![](images/save-blob-output.png)
+    ![](images/save-blob-output.PNG)
 
 
 ### Getting data from Azure Blob Storage
 
 1. Double-click the Get Payload node
 
-    ![](images/get-payload.png)
+    ![](images/get-payload.PNG)
 
 2. Enter your filename into the Payload field and click Done.
 
-    ![](images/get-payload-node.png)
+    ![](images/get-payload-node.PNG)
 
 3. Double-click the Azure Save Blob Storage node, enter your Storage Account Name, Storage Account Key and your desired Container Name and Blob Name. Now click Done.
 
-    ![](images/get-blob-node-selected.png) 
+    ![](images/get-blob-node-selected.PNG) 
     
-    ![](images/save-blob-node.png)
+    ![](images/save-blob-node.PNG)
 
 4. Click Deploy
 
@@ -98,11 +98,11 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
 
 5. Click the square button on the left side of the Get Payload node.
     
-    ![](images/get-payload.png)
+    ![](images/get-payload.PNG)
 
 6. Click on the debug tab to your right and you'll see the name of file that you just downloded to node-red local folder.
 
-    ![](images/get-blob-output.png)
+    ![](images/get-blob-output.PNG)
 
 ### References
 You can read more about Azure Storage [here](https://azure.microsoft.com/pt-br/documentation/services/storage/).
