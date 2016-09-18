@@ -13,7 +13,7 @@ Node-Red node to connect to Azure Table Storage
 
 This node allows you to do CRUD into Azure Table Storage.  It has the following payload format:
 
-# To save entity
+### To save entity
 ```
 { 
   "tableName": "name",
@@ -29,7 +29,7 @@ This node allows you to do CRUD into Azure Table Storage.  It has the following 
 
 - If you send data as JSON, the node will save each key as a column.
  
-#To read entity
+### To read entity
 ```
 { 
   "tableName": "name",
@@ -39,7 +39,7 @@ This node allows you to do CRUD into Azure Table Storage.  It has the following 
 }
 ```
 
-# To delete entity
+### To delete entity
 ```
 { 
   "tableName": "name",
@@ -49,7 +49,7 @@ This node allows you to do CRUD into Azure Table Storage.  It has the following 
 }
 ```
 
-# To update entity
+### To update entity
 ```
 { 
   "tableName": "name",
@@ -63,7 +63,7 @@ This node allows you to do CRUD into Azure Table Storage.  It has the following 
 }
 ```
 
-# To query entity
+### To query entity
 ```
 {
   "tableName": "name", 
@@ -74,7 +74,7 @@ This node allows you to do CRUD into Azure Table Storage.  It has the following 
 }
 
  
-#To delete table
+### To delete table
 ```
 { 
   "tableName": "name",
@@ -95,8 +95,6 @@ npm install -g node-red-contrib-azure-table-storage
 
 ### Node-RED Setup
 Follow the instructions [here](http://nodered.org/docs/getting-started/installation) to get Node-RED setup locally.
-
-```
 
 ### Working with Azure Table Storage node
 
