@@ -30,7 +30,7 @@ module.exports = function (RED) {
             } else {
                 node.log(JSON.stringify(result));
                 setStatus(statusEnum.sent);
-                node.send(filename + 'downloaded');
+                node.send(filename + ' downloaded and saved at node-red local path');
             }
         });
     };
@@ -112,7 +112,7 @@ module.exports = function (RED) {
             node.log()
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
-            createBlob(clientContainerName, clientBlobName, msg.filename);   
+            createBlob(clientContainerName, clientBlobName, msg.payload);   
         });
 
         this.on('close', function () {
