@@ -39,7 +39,7 @@ module.exports = function (RED) {
                 setStatus(node, statusEnum.error);
             } else {
                 node.log('Message sent.');
-                node.send("Message sent.");
+                node.send({payload: "Message sent."});
                 setStatus(node, statusEnum.sent);
             }
         });
@@ -88,8 +88,9 @@ module.exports = function (RED) {
                     var outpuMessage = new Message();
                     outpuMessage.payload = msg.data;
                     setStatus(node, statusEnum.received);
+                    node.log(JSON.stringify(outpuMessage));
                     node.send(outpuMessage);
-                    client.complete(msg, printResultFor('Completed'));
+                    client.complete(msg, printResultFor(node,'Completed'));
                 });
 
                 client.on('error', function (err) {
@@ -209,7 +210,7 @@ module.exports = function (RED) {
 
 
     // Helper function to print results in the console
-    function printResultFor(op) {
+    function printResultFor(node, op) {
         return function printResult(err, res) {
             if (err) node.error(op + ' error: ' + err.toString());
             if (res) node.log(op + ' status: ' + res.constructor.name);
