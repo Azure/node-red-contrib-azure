@@ -109,7 +109,7 @@ module.exports = function (RED) {
         if (client) {
             node.log('Disconnecting from Azure IoT Hub');
             client.removeAllListeners();
-            client.close(printResultFor('close'));
+            client.close(printResultFor(node, 'close'));
             client = null;
             setStatus(node, statusEnum.disconnected);
         }
