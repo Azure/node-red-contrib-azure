@@ -11,7 +11,8 @@
          "azure-iot-device-amqp-ws": "<=1.0.14", 
          "azure-iot-device-http"   : "<=1.0.14", 
          "azure-iot-device-mqtt"   : "<=1.0.14",
-         "azure-iothub": "<=1.0.4" 
+         "azure-iothub": "<=1.0.4", 
+	 "is-property": "<=1.0.2"
      }, 
   "keywords":["node-red", "Azure", "Azure IoT"],
   "node-red" :{
