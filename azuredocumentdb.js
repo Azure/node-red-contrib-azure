@@ -141,20 +141,20 @@ function readCollectionById(collectionId, callback) {
 }
 
 //---------------------------------------------------------- Documents--------------------------------------------------------------------
-function getDocument(document) {
+function getDocument(document, docdbClient, nodeContext) {
     var documentUrl = `${collectionUrl}/docs/${document.id}`;
-    node.log(`Attempting to get document with document.id of: ${document.id}\n`);
+    nodeContext.log(`Getting document:\n${document.id}\n`);
 
     return new Promise((resolve, reject) => {
-        node.log("Attempting read...");
-        client.readDocument(documentUrl, (err, result) => {
-            node.log("Read complete, checking status...");
+        nodeContext.log("trying read");
+        docdbClient.readDocument(documentUrl, (err, result) => {
+            nodeContext.log("reading");
             if (err) {
-                node.log("An error occurred during read, checking status code.");
+                nodeContext.log("error");
                 if (err.code == HttpStatusCodes.NOTFOUND) {
-                    node.log("Status code = Http.NOTFOUND, attempting to create document...");
-                    client.createDocument(collectionUrl, document, (err, created) => {
-                        node.log("Create document completed.");
+                    nodeContext.log("creating");
+                    docdbClient.createDocument(collectionUrl, document, (err, created) => {
+                        nodeContext.log("try to create");
                         if (err) reject(err)
                         else resolve(created);
                     });
@@ -168,12 +168,12 @@ function getDocument(document) {
     });
 };
 
-function deleteDocument(document) {
+function deleteDocument(document, docdbClient, nodeContext) {
     var documentUrl = `${collectionUrl}/docs/${document.id}`;
-    node.log(`Deleting document with document.id of: ${document.id}`);
+    nodeContext.log(`Deleting document:\n${document.id}\n`);
 
     return new Promise((resolve, reject) => {
-        client.deleteDocument(documentUrl, (err, result) => {
+        docdbClient.deleteDocument(documentUrl, (err, result) => {
             if (err) reject(err);
             else {
                 resolve(result);
@@ -182,12 +182,12 @@ function deleteDocument(document) {
     });
 };
 
-function replaceDocument(document) {
+function replaceDocument(document, docdbClient, nodeContext) {
     var documentUrl = `${collectionUrl}/docs/${document.id}`;
-    node.log(`Replacing document with document.id of ${document.id}`);
+    nodeContext.log(`Replacing document:\n${document.id}\n`);
 
     return new Promise((resolve, reject) => {
-        client.replaceDocument(documentUrl, document, (err, result) => {
+        docdbClient.replaceDocument(documentUrl, document, (err, result) => {
             if (err) reject(err);
             else {
                 resolve(result);
@@ -196,39 +196,39 @@ function replaceDocument(document) {
     });
 };
 
-function queryDocuments(querystring) {
-    node.log(`Querying collection through index:\n${collectionName}`);
+function queryDocuments(querystring, docdbClient, nodeContext) {
+    nodeContext.log(`Querying collection through index:\n${collectionName}`);
     querystring = querystring.replace("'", "\"");
     querystring = querystring.replace("'", "\"");
-    node.log("Query string -> " + querystring);
+    nodeContext.log("Query string -> " + querystring);
 
     return new Promise((resolve, reject) => {
-        client.queryDocuments(
+        docdbClient.queryDocuments(
             collectionUrl,
             querystring
         ).toArray((err, results) => {
             if (err) reject(err)
             else {
-                node.log("Results -> " + results);
+                nodeContext.log("Results -> " + results);
                 for (var queryResult of results) {
                     var resultString = JSON.stringify(queryResult);
-                    node.log("Query returned " + resultString);
+                    nodeContext.log("Query returned " + resultString);
                 }
-                node.log("Query OK");
+                nodeContext.log("Query OK");
                 resolve(results);
             }
         });
     });
 };
 
-function listDocuments(collLink, callback) {
-    var queryIterator = client.readDocuments(collectionUrl).toArray(function (err, docs) {
+function listDocuments(collLink, docdbClient, nodeContext, callback) {
+    var queryIterator = docdbClient.readDocuments(collectionUrl).toArray(function (err, docs) {
         if (err) {
             setStatus(statusEnum.error);
-            node.error('Completed with error ' +JSON.stringify(err));
-            node.log('Completed with error ' +JSON.stringify(err));
+            nodeContext.error('Completed with error ' +JSON.stringify(err));
+            nodeContext.log('Completed with error ' +JSON.stringify(err));
         } else {
-            node.log(docs.length + ' Documents found');
+            nodeContext.log(docs.length + ' Documents found');
             callback(docs);
         }
     });
@@ -248,7 +248,7 @@ function listDocuments(collLink, callback) {
     function DocumentDBDatabase(config) {
         // Store node for further use
         node = this;
-        nodeConfig = config;
+        var nodeConfig = config;
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
@@ -330,7 +330,7 @@ function listDocuments(collLink, callback) {
     function DocumentDBCollections(config) {
         // Store node for further use
         node = this;
-        nodeConfig = config;
+        var nodeConfig = config;
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
@@ -423,119 +423,122 @@ function listDocuments(collLink, callback) {
 
     function DocumentDBDocuments(config) {
         // Store node for further use
-        node = this;
-        nodeConfig = config;
+        var nodeContext = this;
+        var nodeConfig = config;       
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        dbendpoint = node.credentials.endpoint;
-        dbkey = node.credentials.authkey;
+        dbendpoint = nodeContext.credentials.endpoint;
+        dbkey = nodeContext.credentials.authkey;
 
         this.on('input', function (msg) {
             //working with collections
-            client = new DocumentDBClient(dbendpoint, { "masterKey": dbkey });
-            node.log("Client started.");
+            var docdbClient = new DocumentDBClient(dbendpoint, { "masterKey": dbkey });
+            nodeContext.log("Client started.");
 
             var messageJSON = null;
 
             if (typeof (msg.payload) != "string") {
-                node.log("JSON");
+                nodeContext.log("JSON");
                 messageJSON = msg.payload;
             } else {
-                node.log("String");
+                nodeContext.log("String");
                 //Converting string to JSON Object
                 //Sample string: {"dbname": "name", "collName": "colletionName", "action": "C", "doc": {"id": "lucas.1", "firstname": "Lucas", "lastname": "Humenhuk"}}
                 //Sample string to QUERY : {"dbname": "name", "collName": "colletionName", "action": "Q", "query" : "SELECT VALUE r.address FROM root r WHERE r.firstName = 'Lucas'"}
                 messageJSON = JSON.parse(msg.payload);
             }
+
             var action = messageJSON.action;
             dbName = messageJSON.dbname;
             collectionName = messageJSON.collName;
             databaseUrl = `dbs/${dbName}`;
             collectionUrl = `${databaseUrl}/colls/${collectionName}`;
             // Sending action to Azure DocumentDB
-            setStatus(statusEnum.sending);
+            
+            setStatus(statusEnum.sending, nodeContext);
+
             switch (action) {
                 case "C":
-                    node.log('Attempting to create Document...');                    
-                    getDocument(messageJSON.doc).then((resolve) => { 
-                        node.log('Completed successfully ' + JSON.stringify(resolve));
-                        setStatus(statusEnum.sent);
+                    nodeContext.log('Attempting to create Document...');                    
+                    getDocument(messageJSON.doc, docdbClient, nodeContext).then((resolve) => { 
+                        nodeContext.log('Completed successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent, nodeContext);
 
                         msg.docdb = { "query": msg.payload, "result": "OK" };
                         msg.payload = resolve;
 
-                        node.send(msg);  
+                        nodeContext.send(msg);  
                     }).catch((error) => { 
-                        setStatus(statusEnum.error);
-                        node.error('Completed with error ' +JSON.stringify(error), msg);                       
+                        setStatus(statusEnum.error, nodeContext);
+                        nodeContext.error('Completed with error ' +JSON.stringify(error), msg);                       
                     });
                     break;
 
                 case "L":
-                    node.log('Attempting to list Documents...');
+                    nodeContext.log('Attempting to list Documents...');
                     var listNames = [];
-                    listDocuments(collectionUrl, function (docs) {
-                        setStatus(statusEnum.sent);
+                    listDocuments(collectionUrl, docdbClient, nodeContext, function (docs) {
+                        setStatus(statusEnum.sent, nodeContext);
 
                         msg.docdb = { "query": msg.payload, "result": "OK" };
                         msg.payload = docs;
 
-                        node.send(msg);
+                        nodeContext.send(msg);
                     })
                     break;
 
                 case "D":
-                    node.log('Attempting to delete Documents...');
-                    deleteDocument(messageJSON.doc).then((resolve) => { 
-                        node.log('Delete successfully ' + JSON.stringify(resolve));
-                        setStatus(statusEnum.sent);
+                    nodeContext.log('Attempting to delete Documents...');
+                    deleteDocument(messageJSON.doc, docdbClient, nodeContext).then((resolve) => { 
+                        nodeContext.log('Delete successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent, nodeContext);
 
                         msg.docdb = { "query": msg.payload, "result": "OK" };
                         msg.payload = resolve;
 
-                        node.send(msg); 
+                        nodeContext.send(msg); 
                     }).catch((error) => { 
-                        setStatus(statusEnum.error);
-                        node.error('Delete with error ' +JSON.stringify(error), msg);
+                        setStatus(statusEnum.error, nodeContext);
+                        nodeContext.error('Delete with error ' +JSON.stringify(error), msg);
                     });
                     break;
 
                 case "U":
-                    node.log('Attempting to update document...');
-                    replaceDocument(messageJSON.doc).then((resolve) => { 
-                        node.log('Updated successfully ' + JSON.stringify(resolve));
-                        setStatus(statusEnum.sent);
+                    nodeContext.log('Attempting to update document...');
+                    replaceDocument(messageJSON.doc, docdbClient, nodeContext).then((resolve) => { 
+                        nodeContext.log('Updated successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent, nodeContext);
 
                         msg.docdb = { "query": msg.payload, "result": "OK" };
                         msg.payload = resolve;
 
-                        node.send(msg);
+                        nodeContext.send(msg);
                     }).catch((error) => { 
-                        setStatus(statusEnum.error);
-                        node.error('Updated with error ' +JSON.stringify(error) + '\r\n' + JSON.stringify(msg.payload), msg);
+                        setStatus(statusEnum.error, nodeContext);
+                        nodeContext.error('Updated with error ' +JSON.stringify(error) + '\r\n' + JSON.stringify(msg.payload), msg);
                     });
                     break;
 
                 case "Q":
-                    node.log('Attempting to query document...');
-                    queryDocuments(messageJSON.query).then((resolve) => { 
-                        node.log('Query successfully ' + JSON.stringify(resolve));
-                        setStatus(statusEnum.sent);
+                    nodeContext.log('Attempting to query document...');
+                    queryDocuments(messageJSON.query, docdbClient, nodeContext).then((resolve) => { 
+                        nodeContext.log('Query successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent, nodeContext);
 
                         msg.docdb = { "query": msg.payload, "result": "OK" };
                         msg.payload = resolve;
 
-                        node.send(msg); 
+                        nodeContext.send(msg); 
                     }).catch((error) => { 
-                        setStatus(statusEnum.error);
-                        node.error('Query with error ' +JSON.stringify(error), msg);
+                        setStatus(statusEnum.error, nodeContext);
+                        nodeContext.error('Query with error ' +JSON.stringify(error), msg);
                     });
                     break;
 
                 default:
-                    node.error('You did not supply an action. Please make sure msg.payload.action is set to C/L/D/U/Q.', msg);
-                    setStatus(statusEnum.error);
+                    nodeContext.error('You did not supply an action. Please make sure msg.payload.action is set to C/L/D/U/Q.', msg);
+                    setStatus(statusEnum.error, nodeContext);
                     break;
             }
         });
