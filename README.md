@@ -31,7 +31,7 @@ For each of the nodes, you'll set the `msg.payload` to a configuration JSON that
 `action` values:
 
 - "C" -> Creates a database
-        * When you create a new database, the node will send as output the name of Database.
+        - When you create a new database, the node will send as output the name of Database.
 - "L" -> Lists databases
 - "D" -> Deletes a database
 
@@ -53,7 +53,7 @@ For each of the nodes, you'll set the `msg.payload` to a configuration JSON that
         { "dbname": "databaseName", "collName": "collectionName", "action": "C" }
 
 - "C" -> create a document
-        * Specify your document by adding a property called `doc` to the configuration JSON, e.g.
+        - Specify your document by adding a property called `doc` to the configuration JSON, e.g.
         
         { "name": 'Lucas', "favoriteFood": "Pizza" }
 
@@ -61,7 +61,7 @@ For each of the nodes, you'll set the `msg.payload` to a configuration JSON that
 - "D" -> delete a document
 - "U" -> update a document
 - "Q" -> query a documents
-        * Specify your query by adding a property called `query` to the configuration JSON, e.g.
+        - Specify your query by adding a property called `query` to the configuration JSON, e.g.
         
                 `SELECT VALUE r.address FROM root r WHERE r.firstname = 'Lucas'`        
 
