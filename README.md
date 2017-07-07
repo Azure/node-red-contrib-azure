@@ -55,7 +55,7 @@ For each of the nodes, you'll set the `msg.payload` to a configuration JSON that
 - "C" -> create a document
         - Specify your document by adding a property called `doc` to the configuration JSON, e.g.
         
-        { "name": 'Lucas', "favoriteFood": "Pizza" }
+        "doc": { "name": 'Lucas', "favoriteFood": "Pizza" }
 
 - "L" -> list documents
 - "D" -> delete a document
@@ -63,7 +63,7 @@ For each of the nodes, you'll set the `msg.payload` to a configuration JSON that
 - "Q" -> query a documents
         - Specify your query by adding a property called `query` to the configuration JSON, e.g.
         
-                `SELECT VALUE r.address FROM root r WHERE r.firstname = 'Lucas'`        
+        "query": "SELECT VALUE r.address FROM root r WHERE r.firstname = 'Lucas'"
 
 Results are passed to the next flow in `msg.payload`. If you need to retrieve the orignal query or check the status of the previous operation, you can check the `msg.docdb` object:
 
