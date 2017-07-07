@@ -457,71 +457,83 @@ function listDocuments(collLink, callback) {
             setStatus(statusEnum.sending);
             switch (action) {
                 case "C":
-                    node.log('Attempting to create document...');
-                    //node.log(JSON.parse(messageJSON.doc));
+                    node.log('Attempting to create Document...');                    
                     getDocument(messageJSON.doc).then((resolve) => { 
-                       node.log('Document creation completed successfully ' + JSON.stringify(resolve));
+                        node.log('Completed successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
-                        node.send('Document creation completed successfully ' + JSON.stringify(resolve));  
+
+                        msg.docdb = { "query": msg.payload, "result": "OK" };
+                        msg.payload = resolve;
+
+                        node.send(msg);  
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Document creation completed with error ' +JSON.stringify(error), msg);
-                       node.log('Document creation completed with error ' +JSON.stringify(error));
+                        node.error('Completed with error ' +JSON.stringify(error), msg);                       
                     });
                     break;
+
                 case "L":
-                    node.log('Attempting to list documents...');
+                    node.log('Attempting to list Documents...');
                     var listNames = [];
                     listDocuments(collectionUrl, function (docs) {
                         setStatus(statusEnum.sent);
-                        if (docs.length == 1) {
-                            node.send(docs[0].id)
-                        } else {
-                            for (var i = 0; i < docs.length; i++) {
-                                listNames.push(docs[i].id);
-                            }
-                            node.send(JSON.stringify(listNames));
-                        }
+
+                        msg.docdb = { "query": msg.payload, "result": "OK" };
+                        msg.payload = docs;
+
+                        node.send(msg);
                     })
                     break;
+
                 case "D":
-                    node.log('Attempting to delete document...');
+                    node.log('Attempting to delete Documents...');
                     deleteDocument(messageJSON.doc).then((resolve) => { 
                         node.log('Delete successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
-                        node.send('Delete successfully ' + JSON.stringify(resolve)); 
+
+                        msg.docdb = { "query": msg.payload, "result": "OK" };
+                        msg.payload = resolve;
+
+                        node.send(msg); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Document delete failed ' +JSON.stringify(error), msg);
-                        node.log('Delete failed ' +JSON.stringify(error));
-                });
+                        node.error('Delete with error ' +JSON.stringify(error), msg);
+                    });
                     break;
+
                 case "U":
                     node.log('Attempting to update document...');
                     replaceDocument(messageJSON.doc).then((resolve) => { 
                         node.log('Updated successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
-                        node.send('Updated successfully ' + JSON.stringify(resolve)); 
+
+                        msg.docdb = { "query": msg.payload, "result": "OK" };
+                        msg.payload = resolve;
+
+                        node.send(msg);
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Updated with error ' +JSON.stringify(error), msg);
-                        node.log('Updated with error ' +JSON.stringify(error));
-                });
+                        node.error('Updated with error ' +JSON.stringify(error) + '\r\n' + JSON.stringify(msg.payload), msg);
+                    });
                     break;
+
                 case "Q":
-                    node.log('Attempting to query for documents...');
+                    node.log('Attempting to query document...');
                     queryDocuments(messageJSON.query).then((resolve) => { 
                         node.log('Query successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
-                        node.send('Query successfully ' + JSON.stringify(resolve)); 
+
+                        msg.docdb = { "query": msg.payload, "result": "OK" };
+                        msg.payload = resolve;
+
+                        node.send(msg); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
                         node.error('Query with error ' +JSON.stringify(error), msg);
-                        node.log('Query with error ' +JSON.stringify(error));
-                });
+                    });
                     break;
+
                 default:
-                    node.log('You did not supply an action. Please make sure msg.payload.action is set to C/L/D/U/Q.');
                     node.error('You did not supply an action. Please make sure msg.payload.action is set to C/L/D/U/Q.', msg);
                     setStatus(statusEnum.error);
                     break;
