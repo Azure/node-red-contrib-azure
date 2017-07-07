@@ -14,10 +14,10 @@ module.exports = function (RED) {
     var HttpStatusCodes = { NOTFOUND: 404 };
 
     var statusEnum = {
-        disconnected: { color: "red", text: "Disconnected" },
-        sending: { color: "green", text: "Sending" },
-        sent: { color: "blue", text: "Sent message" },
-        error: { color: "grey", text: "Error" }
+        disconnected: { color: "grey", text: "Disconnected" },
+        sending: { color: "green", text: "Executing" },
+        sent: { color: "blue", text: "Execution Complete" },
+        error: { color: "red", text: "Error" }
     };
 
     var setStatus = function (status) {
@@ -143,18 +143,18 @@ function readCollectionById(collectionId, callback) {
 //---------------------------------------------------------- Documents--------------------------------------------------------------------
 function getDocument(document) {
     var documentUrl = `${collectionUrl}/docs/${document.id}`;
-    node.log(`Getting document:\n${document.id}\n`);
+    node.log(`Attempting to get document with document.id of: ${document.id}\n`);
 
     return new Promise((resolve, reject) => {
-        node.log("trying read");
+        node.log("Attempting read...");
         client.readDocument(documentUrl, (err, result) => {
-            node.log("reading");
+            node.log("Read complete, checking status...");
             if (err) {
-                node.log("error");
+                node.log("An error occurred during read, checking status code.");
                 if (err.code == HttpStatusCodes.NOTFOUND) {
-                    node.log("creating");
+                    node.log("Status code = Http.NOTFOUND, attempting to create document...");
                     client.createDocument(collectionUrl, document, (err, created) => {
-                        node.log("try to create");
+                        node.log("Create document completed.");
                         if (err) reject(err)
                         else resolve(created);
                     });
@@ -170,7 +170,7 @@ function getDocument(document) {
 
 function deleteDocument(document) {
     var documentUrl = `${collectionUrl}/docs/${document.id}`;
-    node.log(`Deleting document:\n${document.id}\n`);
+    node.log(`Deleting document with document.id of: ${document.id}`);
 
     return new Promise((resolve, reject) => {
         client.deleteDocument(documentUrl, (err, result) => {
@@ -184,7 +184,7 @@ function deleteDocument(document) {
 
 function replaceDocument(document) {
     var documentUrl = `${collectionUrl}/docs/${document.id}`;
-    node.log(`Replacing document:\n${document.id}\n`);
+    node.log(`Replacing document with document.id of ${document.id}`);
 
     return new Promise((resolve, reject) => {
         client.replaceDocument(documentUrl, document, (err, result) => {
@@ -284,7 +284,7 @@ function listDocuments(collLink, callback) {
                         node.send(messageJSON.dbname); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Completed with error ' +JSON.stringify(error));
+                        node.error('Completed with error ' +JSON.stringify(error), msg);
                         node.log('Completed with error ' +JSON.stringify(error));
                     });
                     break;
@@ -310,13 +310,13 @@ function listDocuments(collLink, callback) {
                         node.log('Delete successfully: -> ' + JSON.stringify(resolve));
                      }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Completed with error ' +JSON.stringify(error));
+                        node.error('Completed with error ' +JSON.stringify(error), msg);
                         node.log('Completed with error ' +JSON.stringify(error));
                     });
                     break;
                 default:
                     node.log('action was not detected');
-                    node.error('action was not detected');
+                    node.error('action was not detected', msg);
                     setStatus(statusEnum.error);
                     break;
             }
@@ -371,7 +371,7 @@ function listDocuments(collLink, callback) {
                         node.send(collectionName); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Completed with error ' +JSON.stringify(error));
+                        node.error('Completed with error ' +JSON.stringify(error), msg);
                         node.log('Completed with error ' +JSON.stringify(error));
                     });
                     break;
@@ -410,7 +410,7 @@ function listDocuments(collLink, callback) {
                     break;
                 default:
                     node.log('action was not detected');
-                    node.error('action was not detected');
+                    node.error('action was not detected', msg);
                     setStatus(statusEnum.error);
                     break;
             }
@@ -457,20 +457,20 @@ function listDocuments(collLink, callback) {
             setStatus(statusEnum.sending);
             switch (action) {
                 case "C":
-                    node.log('Trying to create Document');
+                    node.log('Attempting to create document...');
                     //node.log(JSON.parse(messageJSON.doc));
                     getDocument(messageJSON.doc).then((resolve) => { 
-                       node.log('Completed successfully ' + JSON.stringify(resolve));
+                       node.log('Document creation completed successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
-                        node.send('Completed successfully ' + JSON.stringify(resolve));  
+                        node.send('Document creation completed successfully ' + JSON.stringify(resolve));  
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Completed with error ' +JSON.stringify(error));
-                       node.log('Completed with error ' +JSON.stringify(error));
+                        node.error('Document creation completed with error ' +JSON.stringify(error), msg);
+                       node.log('Document creation completed with error ' +JSON.stringify(error));
                     });
                     break;
                 case "L":
-                    node.log('Trying to list Documents');
+                    node.log('Attempting to list documents...');
                     var listNames = [];
                     listDocuments(collectionUrl, function (docs) {
                         setStatus(statusEnum.sent);
@@ -485,44 +485,44 @@ function listDocuments(collLink, callback) {
                     })
                     break;
                 case "D":
-                    node.log('Trying to delete Documents');
+                    node.log('Attempting to delete document...');
                     deleteDocument(messageJSON.doc).then((resolve) => { 
                         node.log('Delete successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
                         node.send('Delete successfully ' + JSON.stringify(resolve)); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Delete with error ' +JSON.stringify(error));
-                        node.log('Delete with error ' +JSON.stringify(error));
+                        node.error('Document delete failed ' +JSON.stringify(error), msg);
+                        node.log('Delete failed ' +JSON.stringify(error));
                 });
                     break;
                 case "U":
-                    node.log('Trying to update document');
+                    node.log('Attempting to update document...');
                     replaceDocument(messageJSON.doc).then((resolve) => { 
                         node.log('Updated successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
                         node.send('Updated successfully ' + JSON.stringify(resolve)); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Updated with error ' +JSON.stringify(error));
+                        node.error('Updated with error ' +JSON.stringify(error), msg);
                         node.log('Updated with error ' +JSON.stringify(error));
                 });
                     break;
                 case "Q":
-                    node.log('Trying to query document');
+                    node.log('Attempting to query for documents...');
                     queryDocuments(messageJSON.query).then((resolve) => { 
                         node.log('Query successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent);
                         node.send('Query successfully ' + JSON.stringify(resolve)); 
                     }).catch((error) => { 
                         setStatus(statusEnum.error);
-                        node.error('Query with error ' +JSON.stringify(error));
+                        node.error('Query with error ' +JSON.stringify(error), msg);
                         node.log('Query with error ' +JSON.stringify(error));
                 });
                     break;
                 default:
-                    node.log('action was not detected');
-                    node.error('action was not detected');
+                    node.log('You did not supply an action. Please make sure msg.payload.action is set to C/L/D/U/Q.');
+                    node.error('You did not supply an action. Please make sure msg.payload.action is set to C/L/D/U/Q.', msg);
                     setStatus(statusEnum.error);
                     break;
             }
