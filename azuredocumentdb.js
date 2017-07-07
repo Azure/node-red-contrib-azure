@@ -329,13 +329,13 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
 
     function DocumentDBCollections(config) {
         // Store node for further use
-        node = this;
+        var nodeContext = this;
         var nodeConfig = config;
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        dbendpoint = node.credentials.endpoint;
-        dbkey = node.credentials.authkey;
+        dbendpoint = nodeContext.credentials.endpoint;
+        dbkey = nodeContext.credentials.authkey;
 
         this.on('input', function (msg) {
             //working with collections
@@ -344,15 +344,17 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
             var messageJSON = null;
 
             if (typeof (msg.payload) != "string") {
-                node.log("JSON");
+                nodeContext.log("JSON");
                 messageJSON = msg.payload;
             } else {
-                node.log("String");
+                nodeContext.log("String");
                 //Converting string to JSON Object
                 //Sample string: {"dbname": "name", "collName": "colletionName", "action": "C"}
                 messageJSON = JSON.parse(msg.payload);
             }
+            
             var action = messageJSON.action;
+
             if  (action != "L")
             {
                 dbName = messageJSON.dbname;
@@ -360,58 +362,68 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
                 databaseUrl = `dbs/${dbName}`;
                 collectionUrl = `${databaseUrl}/colls/${collectionName}`;
             }
+
             // Sending action to Azure DocumentDB
-            setStatus(statusEnum.sending);
+            setStatus(statusEnum.sending, nodeContext);
             switch (action) {
                 case "C":
-                    node.log('Trying to create Collection');
+                    nodeContext.log('Trying to create Collection');
                     getCollection().then((resolve) => { 
-                        node.log('Completed successfully ' + JSON.stringify(resolve));
-                        setStatus(statusEnum.sent);
-                        node.send(collectionName); 
+                        nodeContext.log('Completed successfully ' + JSON.stringify(resolve));
+                        setStatus(statusEnum.sent, nodeContext);
+
+                        msg.payload = collectionName;
+
+                        nodeContext.send(msg); 
                     }).catch((error) => { 
-                        setStatus(statusEnum.error);
-                        node.error('Completed with error ' +JSON.stringify(error), msg);
-                        node.log('Completed with error ' +JSON.stringify(error));
+                        setStatus(statusEnum.error, nodeContext);
+                        nodeContext.error('Completed with error ' + JSON.stringify(error), msg);
                     });
                     break;
                 case "L":
-                    node.log('Trying to list Collections');
+                    nodeContext.log('Trying to list Collections');
                     var listNames = [];
                     listCollections(databaseUrl, function (cols) {
-                        setStatus(statusEnum.sent);
-                        if (cols.length == 1) {
-                            node.send(cols[0].id)
-                        } else {
-                            for (var i = 0; i < cols.length; i++) {
-                                listNames.push(cols[i].id);
-                            }
-                            node.send(JSON.stringify(listNames));
+                        setStatus(statusEnum.sent, nodeContext);
+
+                        for (var i = 0; i < cols.length; i++) {
+                            listNames.push(cols[i].id);
                         }
+
+                        msg.payload = JSON.stringify(listNames);
+
+                        nodeContext.send(msg);
                     });
                     break;
                 case "D":
-                    node.log('Trying to delete Collection');
+                    nodeContext.log('Trying to delete Collection');
                     deleteCollection(collectionName, function () {
-                        setStatus(statusEnum.sent);
-                        node.log('Collection \'' + collectionId + '\'deleted');
-                        node.send('Collection \'' + collectionId + '\'deleted');
+                        setStatus(statusEnum.sent, nodeContext);
+
+                        nodeContext.log('Collection \'' + collectionId + '\'deleted');
+
+                        msg.payload = 'Collection \'' + collectionId + '\'deleted';                        
+
+                        nodeContext.send(msg);
                     });
                     break;
                 case "R":
-                    node.log('Trying to read Collection');
+                    nodeContext.log('Trying to read Collection');
                     readCollectionById(collectionName, function (result) {
                         if (result) {
-                            setStatus(statusEnum.sent);
-                            node.log('Collection with id of \'' + collectionName + '\' was found its _self is \'' + result._self + '\'');
-                            node.send(result._self);
+                            setStatus(statusEnum.sent, nodeContext);
+
+                            nodeContext.log('Collection with id of \'' + collectionName + '\' was found its _self is \'' + result._self + '\'');
+
+                            msg.payload = result._self;
+
+                            nodeContext.send(msg);
                         }
                     });
                     break;
                 default:
-                    node.log('action was not detected');
-                    node.error('action was not detected', msg);
-                    setStatus(statusEnum.error);
+                    nodeContext.error('action was not detected', msg);
+                    setStatus(statusEnum.error, nodeContext);
                     break;
             }
         });
