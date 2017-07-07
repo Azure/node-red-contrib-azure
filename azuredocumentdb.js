@@ -9,19 +9,18 @@ module.exports = function (RED) {
     var collectionName = "";
     var collectionUrl = "";
     var messageJSON = "";
-    var node = null;
-    var nodeConfig = null;
+    var node = null;    
     var HttpStatusCodes = { NOTFOUND: 404 };
 
     var statusEnum = {
         disconnected: { color: "grey", text: "Disconnected" },
         sending: { color: "green", text: "Executing" },
-        sent: { color: "blue", text: "Execution Complete" },
+        sent: { color: "blue", text: "Executed" },
         error: { color: "red", text: "Error" }
     };
 
-    var setStatus = function (status) {
-        node.status({ fill: status.color, shape: "dot", text: status.text });
+    var setStatus = function (status, nodeContext) {
+        nodeContext.status({ fill: status.color, shape: "dot", text: status.text });
     }
 
 
@@ -80,14 +79,14 @@ module.exports = function (RED) {
 
 
 //---------------------------------------------------------- COLLECTIONS--------------------------------------------------------------------
-function getCollection() {
-    node.log(`Getting collection:\n${collectionName}\n`);
+function getCollection(docdbClient, nodeContext) {
+    nodeContext.log(`Getting collection:\n${collectionName}\n`);
     var colldef = {id : collectionName};
     return new Promise((resolve, reject) => {
-        client.readCollection(collectionUrl, (err, result) => {
+        docdbClient.readCollection(collectionUrl, (err, result) => {
             if (err) {
                 if (err.code == HttpStatusCodes.NOTFOUND) {
-                    client.createCollection(databaseUrl, colldef, { offerThroughput: 400 }, (err, created) => {
+                    docdbClient.createCollection(databaseUrl, colldef, { offerThroughput: 400 }, (err, created) => {
                         if (err) reject(err)
                         else resolve(created);
                     });
@@ -101,39 +100,36 @@ function getCollection() {
     });
 }
 
-function listCollections(databaseUrl, callback) {
-    var queryIterator = client.readCollections(databaseUrl).toArray(function (err, cols) {
+function listCollections(databaseUrl, docdbClient, nodeContext, callback) {
+    var queryIterator = docdbClient.readCollections(databaseUrl).toArray(function (err, cols) {
         if (err) {
-            setStatus(statusEnum.error);
-            node.error('Completed with error ' +JSON.stringify(err));
-            node.log('Completed with error ' +JSON.stringify(err));
+            setStatus(statusEnum.error, nodeContext);
+            nodeContext.error('Completed with error ' + JSON.stringify(err));            
         } else {            
-            node.log(cols.length + ' Collections found');
+            nodeContext.log(cols.length + ' Collections found');
             callback(cols);
         }
     });
 }
 
-function deleteCollection(collectionId, callback) {
+function deleteCollection(collectionId, docdbClient, nodeContext, callback) {
     var collLink = databaseUrl + '/colls/' + collectionId;
-    client.deleteCollection(collLink, function (err) {
+    docdbClient.deleteCollection(collLink, function (err) {
         if (err) {
-            setStatus(statusEnum.error);
-            node.error('Completed with error ' +JSON.stringify(err));
-            node.log('Completed with error ' +JSON.stringify(err));
+            setStatus(statusEnum.error, nodeContext);
+            nodeContext.error('Completed with error ' + JSON.stringify(err));
         } else {
             callback();
         }
     });
 }
 
-function readCollectionById(collectionId, callback) {
+function readCollectionById(collectionId, docdbClient, nodeContext, callback) {
     var collLink = databaseUrl + '/colls/' + collectionId;
-    client.readCollection(collLink, function (err, coll) {
+    docdbClient.readCollection(collLink, function (err, coll) {
         if (err) {
-            setStatus(statusEnum.error);
-            node.error('Completed with error ' +JSON.stringify(err));
-            node.log('Completed with error ' +JSON.stringify(err));;
+            setStatus(statusEnum.error, nodeContext);
+            nodeContext.error('Completed with error ' + JSON.stringify(err));
         } else {
             callback(coll);
         }
@@ -339,7 +335,7 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
 
         this.on('input', function (msg) {
             //working with collections
-            client = new DocumentDBClient(dbendpoint, { "masterKey": dbkey });
+            var docdbClient = new DocumentDBClient(dbendpoint, { "masterKey": dbkey });
 
             var messageJSON = null;
 
@@ -368,7 +364,7 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
             switch (action) {
                 case "C":
                     nodeContext.log('Trying to create Collection');
-                    getCollection().then((resolve) => { 
+                    getCollection(docdbClient, nodeContext).then((resolve) => { 
                         nodeContext.log('Completed successfully ' + JSON.stringify(resolve));
                         setStatus(statusEnum.sent, nodeContext);
 
@@ -383,7 +379,7 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
                 case "L":
                     nodeContext.log('Trying to list Collections');
                     var listNames = [];
-                    listCollections(databaseUrl, function (cols) {
+                    listCollections(databaseUrl, docdbClient, nodeContext, function (cols) {
                         setStatus(statusEnum.sent, nodeContext);
 
                         for (var i = 0; i < cols.length; i++) {
@@ -397,7 +393,7 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
                     break;
                 case "D":
                     nodeContext.log('Trying to delete Collection');
-                    deleteCollection(collectionName, function () {
+                    deleteCollection(collectionName, docdbClient, nodeContext, function () {
                         setStatus(statusEnum.sent, nodeContext);
 
                         nodeContext.log('Collection \'' + collectionId + '\'deleted');
@@ -409,7 +405,7 @@ function listDocuments(collLink, docdbClient, nodeContext, callback) {
                     break;
                 case "R":
                     nodeContext.log('Trying to read Collection');
-                    readCollectionById(collectionName, function (result) {
+                    readCollectionById(collectionName, docdbClient, nodeContext, function (result) {
                         if (result) {
                             setStatus(statusEnum.sent, nodeContext);
 
