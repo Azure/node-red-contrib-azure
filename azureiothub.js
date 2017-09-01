@@ -111,7 +111,7 @@ module.exports = function (RED) {
         if (client) {
             node.log('Disconnecting from Azure IoT Hub');
             client.removeAllListeners();
-            client.close(printResultFor('close'));
+            client.close(printResultFor(node, 'close'));
             client = null;
             setStatus(node, statusEnum.disconnected);
         }
@@ -147,7 +147,11 @@ module.exports = function (RED) {
             //Sample
             //HostName=sample.azure-devices.net;DeviceId=sampleDevice;SharedAccessKey=wddU//P8fdfbSBDbIdghZAoSSS5gPhIZREhy3Zcv0JU=
             newConnectionString = "HostName=" + node.credentials.hostname + ";DeviceId=" + messageJSON.deviceId + ";SharedAccessKey=" + messageJSON.key
-            newProtocol = messageJSON.protocol;
+	    if( typeof messageJSON.protocol !== 'undefined'){
+            	newProtocol = messageJSON.protocol;
+	    } else {
+		newProtocol = config.protocol;
+	    }
 
             // Sending data to Azure IoT Hub Hub using specific connectionString
             sendMessageToIoTHub(node, messageJSON.data, nodeConfigUpdated(newConnectionString, newProtocol));
