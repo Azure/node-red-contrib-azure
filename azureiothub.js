@@ -71,6 +71,8 @@ module.exports = function (RED) {
             if (err) {
                 node.error('Could not connect: ' + err.message);
                 setStatus(node, statusEnum.disconnected);
+                // works for me..
+                client = undefined;
             } else {
                 node.log('Connected to Azure IoT Hub.');
                 setStatus(node, statusEnum.connected);
