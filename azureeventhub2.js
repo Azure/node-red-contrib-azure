@@ -27,20 +27,20 @@ module.exports = function (RED) {
          };
     };
 
-    var sendMessageToEventHub = function (node, message, reconnect) {
+    var sendMessageToEventHub = function (node, cs, path, message, reconnect) {
         if (!client || reconnect) {
             node.log('Connection to Event Hub not established or configuration changed. Reconnecting.');
             // Update the connection string
-            clientConnectionString = node.credentials.connectionString;
+            clientConnectionString = cs;
             // update the protocol
-            clientPath = node.credentials.eventHubPath;
+            clientPath = path;
 
             // If client was previously connected, disconnect first
             if (client)
                 disconnectFromEventHub(node);
 
             // Connect the Event Hub
-            connectToEventHub(node, message);
+            connectToEventHub(node, message, cs, path);
         } else {
             sendEvent(node, message);
         }
@@ -65,9 +65,9 @@ module.exports = function (RED) {
         }
     };
 
-    var connectToEventHub = function (node, pendingMessage) {
-        node.log('Connecting to Azure Event Hub:\n   Connection string :' + node.credentials.connectionString);
-        client = EventHubClient.fromConnectionString(node.credentials.connectionString, node.credentials.eventHubPath)
+    var connectToEventHub = function (node, pendingMessage, cs, path) {
+        node.log('Connecting to Azure Event Hub:\n   Connection string :' + cs);
+        client = EventHubClient.fromConnectionString(cs, path)
 
         client.open()
             .then(client.getPartitionIds.bind(client))
@@ -107,12 +107,12 @@ module.exports = function (RED) {
             } else {
                 node.log("String");
                 //Converting string to JSON Object
-                //Sample string: {"deviceId": "name", "key": "jsadhjahdue7230-=13", "protocol": "amqp", "data": "25"}
+                //Sample string: {connectionString: "cs", eventPath: "/message", "deviceId": "name", "key": "jsadhjahdue7230-=13", "protocol": "amqp", "data": "25"}
                 messageJSON = JSON.parse(msg.payload);
             }
 
             // Sending data to Azure Event Hub Hub
-            sendMessageToEventHub(node, messageJSON.data);
+            sendMessageToEventHub(node, messageJSON.connectionString, messageJSON.eventPath, messageJSON.data);
         });
 
         node.on('close', function () {
@@ -123,10 +123,6 @@ module.exports = function (RED) {
 
     // Registration of the node into Node-RED
     RED.nodes.registerType("azureeventhub", AzureEventHubNode, {
-        credentials: {
-            connectionString: { type: "text" },
-            eventHubPath: { type: "text"}
-        },
         defaults: {
             name: { value: "Azure Event Hub" }
         }
