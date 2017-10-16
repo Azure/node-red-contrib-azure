@@ -1,0 +1,37 @@
+language: node_js
+node_js:
+  - '0.10'
+  - '4'
+  - '6'
+
+sudo: required
+dist: trusty
+
+branches:
+  except:
+    - gh-pages
+
+addons:
+  apt:
+   sources:
+   - sourceline: 'ppa:qpid/testing'
+   packages:
+   - qpidd
+   - qpid-tools
+
+before_install:
+  - npm install -g codeclimate-test-reporter
+
+before_script:
+  - sudo sh -c 'echo "auth=no" >> /etc/qpid/qpidd.conf'
+  - sudo /etc/init.d/qpidd restart
+
+  # remove these when we can specify link properties
+  - sudo qpid-config add queue test.disposition.queue
+  - sudo qpid-config add queue test.streams.queue
+
+script:
+  - make coverage
+
+after_script:
+  - codeclimate-test-reporter < coverage/lcov.info
