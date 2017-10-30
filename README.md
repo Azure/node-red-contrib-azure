@@ -20,8 +20,7 @@ Azure node. Can be used to work with Azure SQL Database
  - Supports :
  
 ◦Select (query) into Azure SQL
-
-Still working to insert new data.
+◦Insert (query) into Azure SQL
 
 ##How to use:
 
@@ -35,6 +34,23 @@ You must have create the database before to use. You will use:
 Use `msg.payload` to query data into Database.
 
 Ex: 'msg.payload' -> {"action": "Q", "query" : "SELECT * FROM table WHERE firstName = 'Lucas'"};
+Ex: 'msg.payload' -> { "action": "I", "query": "insert into table (Name, LastName, Age) VALUES ('Jane', 'Doe', '25')" };
+
+
+Response Object:
+Read Query -
+Json object will be returned for each row of output in this format:
+Ex:
+object
+{ Name: "Jane",
+  LastName: "Doe",
+  Age: 25
+}
+
+Write Query - 
+String output
+Ex:
+"Insert Complete. ID of inserted item is 1017"
 
 -----
 
