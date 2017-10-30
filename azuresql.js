@@ -62,8 +62,8 @@ module.exports = function (RED) {
                 node.log('Error: ' +JSON.stringify(err));
             }
         }); 
-        var obj = [];
-        var obj1= {};
+        var result = [];
+        var columnDetails= {};
 
         request.on('row', function(columns) {  
             columns.forEach(function(column) {  
@@ -71,11 +71,11 @@ module.exports = function (RED) {
                 node.log('NULL');  
               } else {  
                 let columnName = column.metadata.colName;
-                obj1[columnName] = column.value;
+                columnDetails[columnName] = column.value;
               }  
             }); 
-            obj.push(obj1);
-            node.send(obj);
+            result.push(columnDetails);
+            node.send(result);
             setStatus(statusEnum.sent);   
         });  
   
