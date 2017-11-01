@@ -53,6 +53,7 @@ module.exports = function (RED) {
     });
  }
 
+
  function executeStatement() {  
         request = new Request(queryString, function(err, rowCount, rows) {  
                 node.log(rowCount + " rows returned");
@@ -86,7 +87,6 @@ module.exports = function (RED) {
     } 
 
     function executeStatementToInsert() {  
-
         request = new Request(queryString+"; select @@identity", function(err, rowCount) {
             if (err) {
                 setStatus(statusEnum.error);
