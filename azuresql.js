@@ -28,50 +28,56 @@ module.exports = function (RED) {
 
 //---------------------------------------------------------- DATABASE--------------------------------------------------------------------
  function connectToDatabase(callback) { 
-    if (!client) {
+    if (client) {
         client.close();
-        var config = {  
-            userName: username,  
-            password: pass,  
-            server: dbAddress,  
-            options: {encrypt: true, database: dbName}  
-        };  
-        client = new Connection(config);  
-        client.on('connect', function(err) {  
-            if (err) {
-                setStatus(statusEnum.error);
-                node.error('Error: ' +JSON.stringify(err));
-                node.log('Error: ' +JSON.stringify(err));
-            } else {
-                node.log("Connected");
-                setStatus(statusEnum.connect);
-                callback();
-            }
-        });
     }
+    // Prepare config
+    var config = {  
+        userName: username,  
+        password: pass,  
+        server: dbAddress,  
+        options: {encrypt: true, database: dbName, rowCollectionOnDone: true}  
+    };  
+    // Create connection
+    client = new Connection(config);  
+    client.on('connect', function(err) {  
+        if (err) {
+            setStatus(statusEnum.error);
+            node.error('Error: ' +JSON.stringify(err));
+            node.log('Error: ' +JSON.stringify(err));
+        } else {
+            node.log("Connected");
+            setStatus(statusEnum.connect);
+            callback();
+        }
+    });
  }
 
+
  function executeStatement() {  
-        request = new Request(queryString, function(err) {  
+        request = new Request(queryString, function(err, rowCount, rows) {  
+                node.log(rowCount + " rows returned");
             if (err) {  
                 setStatus(statusEnum.error);
                 node.error('Error: ' +JSON.stringify(err));
                 node.log('Error: ' +JSON.stringify(err));
-            }  
-        });  
-        var result = "";  
+            }
+        }); 
+        var result = [];
+        var columnDetails= {};
+
         request.on('row', function(columns) {  
             columns.forEach(function(column) {  
               if (column.value === null) {  
                 node.log('NULL');  
               } else {  
-                result += column.value + " | ";  
+                let columnName = column.metadata.colName;
+                columnDetails[columnName] = column.value;
               }  
-            });  
-            node.log(result);
+            }); 
+            result.push(columnDetails);
             node.send(result);
-            setStatus(statusEnum.sent);  
-            result ="";  
+            setStatus(statusEnum.sent);   
         });  
   
         request.on('done', function(rowCount, more) {  
@@ -81,29 +87,22 @@ module.exports = function (RED) {
     } 
 
     function executeStatementToInsert() {  
-        request = new Request(queryString, function(err) {  
-            if (err) {  
+        request = new Request(queryString+"; select @@identity", function(err, rowCount) {
+            if (err) {
                 setStatus(statusEnum.error);
                 node.error('Error: ' +JSON.stringify(err));
                 node.log('Error: ' +JSON.stringify(err));
-            }  
-        });  
-        request.addParameter('Name', TYPES.NVarChar,'SQL Server Express 2014');  
-        request.addParameter('Number', TYPES.NVarChar , 'SQLEXPRESS2014');  
-        request.addParameter('Cost', TYPES.Int, 11);  
-        request.addParameter('Price', TYPES.Int,11);  
-        request.on('row', function(columns) {  
-            columns.forEach(function(column) {  
-              if (column.value === null) {  
-                node.log('NULL');
+            } else {
+                console.log('Insert complete.');
                 setStatus(statusEnum.sent);  
-              } else {  
-                node.log("Product id of inserted item is " + column.value);
-                node.send("Product id of inserted item is " + column.value);
-                setStatus(statusEnum.sent);  
-              }  
-            });  
-        });       
+            }
+        });
+
+        request.on('row', function(columns) {
+            node.log("Insert Complete. ID of inserted item is " + columns[0].value);
+            node.send("Insert Complete. ID of inserted item is " + columns[0].value);
+        });
+        
         client.execSql(request);  
     }  
 
@@ -150,7 +149,7 @@ module.exports = function (RED) {
             switch (action) {
                 case "I":
                     node.log('Trying to insert data into Database');
-                    //connectToDatabase(executeStatementToInsert);
+                    connectToDatabase(executeStatementToInsert);
                     break;
                 case "Q":
                     node.log('Trying to query document');
