@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-azure-sql",
   "description": "Connector to Azure SQL Database on Node-Red",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "engines": {
     "node": ">=0.10.0"
   },
