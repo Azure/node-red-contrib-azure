@@ -1,0 +1,39 @@
+{
+  "name": "node-red-contrib-azure-event-hub-2",
+  "description": "Connector to azure event hub on Node-Red",
+  "version": "0.1.1",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+    "azure-event-hubs": ">=0.0.3",
+    "bluebird": "^3.4.1"
+  },
+  "keywords": [
+    "node-red",
+    "Azure",
+    "Azure Event Hub",
+    "Event Hub",
+    "Azure EH"
+  ],
+  "node-red": {
+    "nodes": {
+      "Azure": "azureeventhub2.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azure/node-red-contrib-azure"
+  },
+  "author": "Lucas Humenhuk <luhumenh@microsoft.com> (http://nodered.org)",
+  "bugs": {
+    "url": "https://github.com/lcarli/NodeRed-Azure-EventHub/issues"
+  },
+  "homepage": "https://github.com/lcarli/NodeRed-Azure-EventHub#readme",
+  "main": "azureeventhub2.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "ISC"
+}
