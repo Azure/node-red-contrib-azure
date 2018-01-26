@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-azure-blob-storage",
   "description": "Connector to Azure Blob Storage on Node-Red",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -30,9 +30,11 @@
     "email": "luhumenh@microsoft.com",
     "url": "http://nodered.org"
   },
-  "contributors": [{
-    "name": "Rajasa Savant",
-    "email": "rasavant@microsoft.com",
-    "url": "http://rjsavant.com"
-  }]
+  "contributors": [
+    {
+      "name": "Rajasa Savant",
+      "email": "rasavant@microsoft.com",
+      "url": "http://rjsavant.com"
+    }
+  ]
 }
