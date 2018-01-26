@@ -19,7 +19,7 @@ module.exports = function (RED) {
 
     var setStatus = function (status) {
         node.status({ fill: status.color, shape: "dot", text: status.text });
-    }
+    };
 
     var downloadBlob = function (container, blob, filename) {
         node.log('Downloading data from Azure Blob Storage :\n   blob: ' + blob);
@@ -35,10 +35,10 @@ module.exports = function (RED) {
         });
     };
 
-    var uptadeBlob = function (container, blob, file) {
+    var updateBlob = function (container, blob, file) {
         node.log('Updating Blob');
         // 
-    }
+    };
 
     var deleteBlob = function (container, blob) {
         node.log('deleting blob');
@@ -52,7 +52,7 @@ module.exports = function (RED) {
                 node.send('Blob deleted');
             } 
         });   
-    }
+    };
 
     var disconnectFrom = function () { 
          if (clientBlobService) { 
@@ -61,27 +61,27 @@ module.exports = function (RED) {
              clientBlobService = null; 
              setStatus(statusEnum.disconnected); 
          } 
-     } 
+     }; 
 
-
-     function createContainer(containerName) {
-        node.log('Creating a container if not exists');
+     function createContainer(containerName, clientAccountName, clientAccountKey) {
+        node.log("Check if container exists, else create a new one");
         var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
         clientBlobService = blobService;
+        
         clientBlobService.createContainerIfNotExists(containerName, function(err, result, response) {
-        if (!err) {
-                // result contains true if created; false if already exists
-                return containerName;
-         }
-         else {
-             node.error(err);
-         }
+            if (!err) {
+                node.log("Container '"+ containerName +"' already exists!");
+            }
+            else {
+                node.log("New container '"+ containerName +"' created!");
+            }
         });
+        return containerName;
     }
 
-    function createBlob(container, blob, file) {
-        var localcontainer = createContainer(container);
-        node.log('Creating a blob if not exists on ' + container);
+    function createBlob(container, blob, accountName, accountKey, file) {
+        createContainer(container, accountName, accountKey);
+        node.log('Creating a blob on ' + container);
         clientBlobService.createBlockBlobFromLocalFile(container, blob, file, function(err, result, response) {
         if (err) {
                 node.error('Error while trying to create blob:' + err.toString());
@@ -101,18 +101,26 @@ module.exports = function (RED) {
         node = this;
         nodeConfig = config;
 
+        node.log("config - " + config);
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        clientAccountName = node.credentials.accountname
-        clientAccountKey = node.credentials.key;
-        clientContainerName = node.credentials.container;
-        clientBlobName = node.credentials.blob;
+        clientAccountName = this.credentials.accountname;
+        clientAccountKey = this.credentials.key;
+        clientContainerName = this.credentials.container;
+        clientBlobName = this.credentials.blob;
 
         this.on('input', function (msg) {
-            node.log()
+
+            var messageJSON = null;
+
+            clientAccountName = this.credentials.accountname;
+            clientAccountKey = this.credentials.key;
+            clientContainerName = this.credentials.container;
+            clientBlobName = this.credentials.blob;
+            
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
-            createBlob(clientContainerName, clientBlobName, msg.payload);   
+            createBlob(clientContainerName, clientBlobName, clientAccountName, clientAccountKey, msg.payload);   
         });
 
         this.on('close', function () {
@@ -127,13 +135,13 @@ module.exports = function (RED) {
 
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
-        clientAccountName = node.credentials.accountname
+        clientAccountName = node.credentials.accountname;
         clientAccountKey = node.credentials.key;
         clientContainerName = node.credentials.container;
         clientBlobName = node.credentials.blob;
 
         this.on('input', function (msg) {
-            node.log('downloading blob')
+            node.log('downloading blob');
             // Sending order to Azure Blob Storage
             createContainer(clientContainerName);
             setStatus(statusEnum.sending);
@@ -179,4 +187,4 @@ module.exports = function (RED) {
             if (res) node.log(op + ' status: ' + res.constructor.name);
         };
     }
-}
+};
