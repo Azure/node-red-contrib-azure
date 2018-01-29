@@ -29,5 +29,10 @@
     "name": "Lucas Humenhuk",
     "email": "luhumenh@microsoft.com",
     "url": "http://nodered.org"
-  }
+  },
+  "contributors": [{
+    "name": "Rajasa Savant",
+    "email": "rasavant@microsoft.com",
+    "url": "http://rjsavant.com"
+  }]
 }
