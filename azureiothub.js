@@ -11,6 +11,8 @@ module.exports = function (RED) {
         amqpWs: require('azure-iot-device-amqp-ws').AmqpWs
     };
 
+    var EventHubClient = require('azure-event-hubs').Client;
+
     var client = null;
     var clientConnectionString = "";
     var newConnectionString = "";
@@ -193,6 +195,72 @@ module.exports = function (RED) {
 
     }
 
+    var connectToEventHub = function( node, connectionString ){
+        // Open connection
+        node.client = EventHubClient.fromConnectionString(connectionString);
+        node.client.open()
+            .then(node.client.getPartitionIds.bind(node.client))
+            .then(function (partitionIds) {
+            setStatus(node, statusEnum.connected);
+            return partitionIds.map(function (partitionId) {
+                return node.client.createReceiver('$Default', partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
+                    node.log('Created Event Hub partition receiver: ' + partitionId);
+                    // Allthough 'errorReceived' event is defined in azure-event-hubs function documentation, it does not appear to throw one when disconnected
+                    receiver.on('errorReceived', function( err ){
+                        node.log('Receiver error: ', err);
+                        setStatus(node, statusEnum.error);
+                    });
+                    receiver.on('message', function( message ){
+                        setStatus(node, statusEnum.received);
+                        let msg = {
+                            deviceId: message.annotations["iothub-connection-device-id"],
+                            topic: message.properties.subject||message.properties.to,
+                            payload: message.body
+                        };
+                        node.send(msg);
+                    });
+                });
+            });
+        }).catch(function(error){
+            node.log("Event Hub connection threw an error: ", error.message);
+            setStatus(node, statusEnum.error);
+            node.client.close();
+            node.client = null;
+            if( !node.reconnectTimer ){
+                node.reconnectTimer = setTimeout( function(){
+                    node.reconnectTimer = null;
+                    if( !node.client ) connectToEventHub( node, connectionString );
+                }, 30000)
+            }
+        });
+    }
+
+    function AzureIoTHubReceiverNode(config) {
+        // Store node for further use
+        var node = this;
+        this.client = null;
+        this.reconnectTimer = null;
+
+        // Create the Node-RED node
+        RED.nodes.createNode(this, config);
+
+        connectToEventHub( this, node.credentials.connectionString );
+
+        node.on('close', function (removed, done) {
+            if( node.reconnectTimer ){
+                clearTimeout( node.reconnectTimer );
+                node.reconnectTimer = null;
+            }
+            if (node.client) {
+                node.log('Disconnecting from Azure IoT Hub');
+                node.client.close();
+                node.client = null;
+                setStatus(node, statusEnum.disconnected);
+            }
+            done();
+        });
+    }
+
     // Registration of the node into Node-RED
     RED.nodes.registerType("azureiothub", AzureIoTHubNode, {
         credentials: {
@@ -214,6 +282,14 @@ module.exports = function (RED) {
         }
     });
 
+    RED.nodes.registerType("azureiothubreceiver", AzureIoTHubReceiverNode, {
+        credentials: {
+            connectionString: { type: "text" }
+        },
+        defaults: {
+            name: { value: "Azure IoT Hub Receiver" }
+        }
+    });
 
     // Helper function to print results in the console
     function printResultFor(node, op) {
