@@ -195,19 +195,32 @@ module.exports = function (RED) {
 
     }
 
+    var disconnectFromEventHub = function( node ){
+        if( node.reconnectTimer ){
+            clearTimeout( node.reconnectTimer );
+            node.reconnectTimer = null;
+        }
+        if (node.client) {
+            node.log('Disconnecting from Azure IoT Hub');
+            node.client.close();
+            node.client = null;
+            setStatus(node, statusEnum.disconnected);
+        }
+    };
+
     var connectToEventHub = function( node, connectionString ){
         // Open connection
         node.client = EventHubClient.fromConnectionString(connectionString);
+
         node.client.open()
             .then(node.client.getPartitionIds.bind(node.client))
-            .then(function (partitionIds) {
-            setStatus(node, statusEnum.connected);
-            return partitionIds.map(function (partitionId) {
+            .then((partitionIds)=>{
+            return Promise.all( partitionIds.map( (partitionId)=> {
                 return node.client.createReceiver('$Default', partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
                     node.log('Created Event Hub partition receiver: ' + partitionId);
                     // Allthough 'errorReceived' event is defined in azure-event-hubs function documentation, it does not appear to throw one when disconnected
                     receiver.on('errorReceived', function( err ){
-                        node.log('Receiver error: ', err);
+                        node.log('Receiver error: ', err.message);
                         setStatus(node, statusEnum.error);
                     });
                     receiver.on('message', function( message ){
@@ -220,20 +233,27 @@ module.exports = function (RED) {
                         node.send(msg);
                     });
                 });
+            }));
+        }).then(()=>{
+            node.log("Connected to each partition receiver - ready to receive data!");
+            setStatus(node, statusEnum.connected);
+            // Since EventHubClient does not provide any mechanism to catch disconnection nor override AMQP retry policy, the only available option is to listen to it's private _amqp member directly
+            node.client._amqp.once('connection:closed', function(){
+                node.log("AMQP disconnected");
+                process.nextTick(()=>{
+                    disconnectFromEventHub(node);
+                    connectToEventHub( node, connectionString );
+                });
             });
         }).catch(function(error){
-            node.log("Event Hub connection threw an error: ", error.message);
-            setStatus(node, statusEnum.error);
-            node.client.close();
-            node.client = null;
-            if( !node.reconnectTimer ){
-                node.reconnectTimer = setTimeout( function(){
-                    node.reconnectTimer = null;
-                    if( !node.client ) connectToEventHub( node, connectionString );
-                }, 30000)
-            }
+            node.log("Event Hub connection threw an error: " + error.message);
+            disconnectFromEventHub(node);
+            node.reconnectTimer = setTimeout( function(){
+                node.reconnectTimer = null;
+                if( !node.client ) connectToEventHub( node, connectionString );
+            }, 30000);
         });
-    }
+    };
 
     function AzureIoTHubReceiverNode(config) {
         // Store node for further use
@@ -244,19 +264,12 @@ module.exports = function (RED) {
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
 
+        setStatus(node, statusEnum.disconnected);
+
         connectToEventHub( this, node.credentials.connectionString );
 
         node.on('close', function (removed, done) {
-            if( node.reconnectTimer ){
-                clearTimeout( node.reconnectTimer );
-                node.reconnectTimer = null;
-            }
-            if (node.client) {
-                node.log('Disconnecting from Azure IoT Hub');
-                node.client.close();
-                node.client = null;
-                setStatus(node, statusEnum.disconnected);
-            }
+            disconnectFromEventHub(node);
             done();
         });
     }
