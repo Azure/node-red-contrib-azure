@@ -268,9 +268,8 @@ module.exports = function (RED) {
 
         connectToEventHub( this, node.credentials.connectionString );
 
-        node.on('close', function (removed, done) {
+        node.on('close', function() {
             disconnectFromEventHub(node);
-            done();
         });
     }
 
