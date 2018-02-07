@@ -33,6 +33,23 @@
             connectionString: {type:"text"}
         }
     });
+
+    RED.nodes.registerType('azureiothubreceiver',{
+        category: 'cloud',
+        color: '#00abec',
+        defaults: {
+            name: {value:"Azure IoT Hub Receiver"}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "azureiothub.png",
+        label: function() {
+            return this.name||"Azure IoT Hub Receiver";
+        },
+        credentials: {
+            connectionString: {type:"text"}
+        }
+    });
 </script>
 
 <script type="text/x-red" data-template-name="azureiothub">
@@ -74,3 +91,17 @@
     <p>A simple node that registers devices with Azure IoT Hub</p>
 </script>
 
+<script type="text/x-red" data-help-name="azureiothubreceiver">
+    <p>A simple node for receiving device-to-cloud messages via default Azure Events Hub endpoint.</p>
+</script>
+
+<script type="text/x-red" data-template-name="azureiothubreceiver">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-connectionString"><i class="fa fa-bookmark"></i> connectionString</label>
+        <input type="text" id="node-input-connectionString">
+    </div>
+</script>
