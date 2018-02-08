@@ -192,7 +192,6 @@ module.exports = function (RED) {
         node.on('close', function () {
             disconnectFromIoTHub(node, this);
         });
-
     }
 
     var disconnectFromEventHub = function( node ){
@@ -273,6 +272,36 @@ module.exports = function (RED) {
         });
     }
 
+    function AzureIoTHubDeviceTwin(config){
+        RED.nodes.createNode(this, config);
+
+        var node = this;
+
+        node.on('input', function (msg) {
+            var registry = Registry.fromConnectionString(node.credentials.connectionString);
+
+            if( typeof msg.payload === "string" ) var query = registry.createQuery("SELECT * FROM devices WHERE deviceId ='" + msg.payload + "'");
+            else var query = registry.createQuery("SELECT * FROM devices");
+
+            query.nextAsTwin( function(err, results){
+                if (err) {
+                    node.error('Error while trying to retrieve device twins: ' + err.message);
+                    msg.error = err;
+                    delete msg.payload;
+                    node.send(msg);
+                } else {
+                    msg.payload = results;
+                    disconnectFromIoTHub(node, this);
+                    node.send(msg);
+                }
+            });
+        });
+
+        node.on('close', function () {
+            disconnectFromIoTHub(node, this);
+        });
+    }
+
     // Registration of the node into Node-RED
     RED.nodes.registerType("azureiothub", AzureIoTHubNode, {
         credentials: {
@@ -300,6 +329,15 @@ module.exports = function (RED) {
         },
         defaults: {
             name: { value: "Azure IoT Hub Receiver" }
+        }
+    });
+
+    RED.nodes.registerType("azureiothubdevicetwin", AzureIoTHubDeviceTwin, {
+        credentials: {
+            connectionString: { type: "text" }
+        },
+        defaults: {
+            name: { value: "Azure IoT Hub Device Twin" }
         }
     });
 
