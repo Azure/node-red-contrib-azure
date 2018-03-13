@@ -2,9 +2,9 @@
 
 node-red-contrib-azure-iot-hub is a <a href="http://nodered.org" target="_new">Node-RED</a> node that allows you to send messages and register devices with Azure IoT Hub. This is a fork from the original Node-RED example by the Azure IoT team found [here](https://github.com/Azure/azure-iot-sdks/tree/master/node/device/node-red).
 
-It contains two new Node-RED cloud nodes: **Azure IoT Hub** and **Azure IoT Registry**
+It contains a total of four Node-RED cloud nodes: **Azure IoT Hub**, **Azure IoT Registry**, **Azure IoT Hub Receiver** and **Azure IoT Hub Device Twin**
 
-![](images/flow-nodes.png)
+![](images/flow-nodes-1.png)
 
 #### Azure IoT Hub
 
@@ -179,6 +179,8 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
     ![](images/send-deviceid-node.png)
 
 5. You should then see a Device Twin information in the debug pane.
+
+    ![](images/send-deviceid-output.png)
 
 ### References
 You can read more about Azure IoT Hub [here](https://azure.microsoft.com/en-us/documentation/services/iot-hub/).
