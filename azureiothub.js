@@ -226,7 +226,7 @@ module.exports = function (RED) {
                         setStatus(node, statusEnum.received);
                         let msg = {
                             deviceId: message.annotations["iothub-connection-device-id"],
-                            topic: message.properties.subject||message.properties.to,
+                            //topic: message.properties.subject||message.properties.to,
                             payload: message.body
                         };
                         node.send(msg);
