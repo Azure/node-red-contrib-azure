@@ -1,0 +1,28 @@
+<script type="text/javascript">
+  RED.nodes.registerType('iot-device-method-request', {
+    category: 'input',
+    outputs: 1,
+    defaults: {
+      client: {value:"", type:"iot-device-config", required: true },
+      methodName: {value: "", required: true }
+    },
+    label: function () { return this.name || "iot-device-method-request"; },
+    icon: "azureiothub.png",
+    color: '#007FFF'
+  });
+</script>
+
+<script type="text/x-red" data-template-name="iot-device-method-request">
+  <div class="form-row">
+      <label for="node-input-client"><i class="icon-bookmark"></i> Client</label>
+      <input type="text" id="node-input-client">
+  </div>
+  <div class="form-row">
+    <label for="node-input-methodName"><i class="icon-bookmark"></i> Method name</label>
+    <input type="text" id="node-input-methodName">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="iot-device-method-request">
+  <p>Receives requests for a specific device method</p>
+</script>

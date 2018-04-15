@@ -1,0 +1,28 @@
+<script type="text/javascript">
+  RED.nodes.registerType('iot-device-config', {
+    category: 'config',
+    defaults: {
+      protocol: { value:"mqtt", required: true }
+    },
+    label: function () { return this.name || "iot-device-config"; },
+    icon: "azureiothub.png",
+    color: '#007FFF'
+  });
+</script>
+
+<script type="text/x-red" data-template-name="iot-device-config">
+  <div class="form-row">
+      <label for="node-config-input-protocol"><i class="icon-tag"></i> Protocol</label>
+      <select id="node-config-input-protocol">
+          <option>Mqtt</option>
+          <option>MqttWs</option>
+          <option>Amqp</option>
+          <option>AmqpWs</option>
+          <option>Http</option>
+      </select>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="iot-device-config">
+  <p>Configuration node for a device connecting to Azure IoT Hub</p>
+</script>

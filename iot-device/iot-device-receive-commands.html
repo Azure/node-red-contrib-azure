@@ -1,0 +1,23 @@
+<script type="text/javascript">
+  RED.nodes.registerType('iot-device-receive-commands', {
+    category: 'input',
+    outputs: 1,
+    defaults: {
+      client: {value:"", type:"iot-device-config"},
+    },
+    label: function () { return this.name || "iot-device-receive-commands"; },
+    icon: "azureiothub.png",
+    color: '#007FFF'
+  });
+</script>
+
+<script type="text/x-red" data-template-name="iot-device-receive-commands">
+  <div class="form-row">
+      <label for="node-input-client"><i class="icon-bookmark"></i> Client</label>
+      <input type="text" id="node-input-client">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="iot-device-receive-commands">
+  <p>Configuration node for a device connecting to Azure IoT Hub</p>
+</script>
