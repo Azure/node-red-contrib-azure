@@ -12,6 +12,9 @@
         label: function() {
             return this.name||"Azure IoT Hub";
         },
+        paletteLabel: function(){
+            return "Azure IoT Hub";
+        },
         credentials: {
             hostname: {type:"text"}
         }
@@ -28,6 +31,49 @@
         icon: "azureiothub.png",
         label: function() {
             return this.name||"Azure IoT Hub Registry";
+        },
+        paletteLabel: function(){
+            return "Azure IoT Hub Registry";
+        },
+        credentials: {
+            connectionString: {type:"text"}
+        }
+    });
+
+    RED.nodes.registerType('azureiothubreceiver',{
+        category: 'cloud',
+        color: '#00abec',
+        defaults: {
+            name: {value:"Azure IoT Hub Receiver"}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "azureiothub.png",
+        label: function() {
+            return this.name||"Azure IoT Hub Receiver";
+        },
+        paletteLabel: function(){
+            return "Azure IoT Hub Receiver";
+        },
+        credentials: {
+            connectionString: {type:"text"}
+        }
+    });
+
+    RED.nodes.registerType('azureiothubdevicetwin',{
+        category: 'cloud',
+        color: '#00abec',
+        defaults: {
+            name: {value:"Azure IoT Hub Device Twin"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "azureiothub.png",
+        label: function() {
+            return this.name||"Azure IoT Hub Device Twin";
+        },
+        paletteLabel: function(){
+            return "Azure IoT Hub Device Twin";
         },
         credentials: {
             connectionString: {type:"text"}
@@ -74,3 +120,50 @@
     <p>A simple node that registers devices with Azure IoT Hub</p>
 </script>
 
+<script type="text/x-red" data-help-name="azureiothubreceiver">
+    <p>A simple node for receiving device-to-cloud messages via default Azure Events Hub endpoint.</p>
+</script>
+
+<script type="text/x-red" data-template-name="azureiothubreceiver">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-connectionString"><i class="fa fa-bookmark"></i> connectionString</label>
+        <input type="text" id="node-input-connectionString">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="azureiothubdevicetwin">
+   <p>A simple node for retrieving Azure IoT Hub Device Twin(s).</p>
+   <h3>Inputs</h3>
+       <dl class="message-properties">
+       <dt class="optional">payload
+           <span class="property-type" >string</span>
+       </dt>
+       <dd>Optional deviceId specifier to retrieve only a specific Device Twin. If this property type is not defined or not a string, all Device Twins are retrieved.</dd>
+   <h3>Outputs</h3>
+       <dl class="message-properties">
+       <dt class="optional">payload
+           <span class="property-type">object</span>
+       </dt>
+       <dd>Retrieved Device Twin(s) as an array.</dd>
+       <dt class="optional">error
+           <span class="property-type">object</span>
+       </dt>
+       <dd>Error encountered. If present, <code>msg.payload</code> is always undefined.</dd>
+   <h3>Details</h3>
+   <p>Each input with produce an output with either <code>msg.error</code> as error object or <code>msg.payload</code> as an array of Device Twin data.</p>
+</script>
+
+<script type="text/x-red" data-template-name="azureiothubdevicetwin">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-connectionString"><i class="fa fa-bookmark"></i> connectionString</label>
+        <input type="text" id="node-input-connectionString">
+    </div>
+</script>
