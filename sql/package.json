@@ -1,6 +1,7 @@
 {
   "name": "node-red-contrib-azure-sql",
   "description": "Connector to Azure SQL Database on Node-Red",
+<<<<<<< HEAD
   "version": "0.1.2",
   "engines": {
     "node": ">=0.10.0"
@@ -8,6 +9,15 @@
   "dependencies" : { 
       "tedious": "^1.12.0"
   }, 
+=======
+  "version": "0.0.3",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+     "dependencies" : { 
+         "tedious": "^1.12.0"
+     }, 
+>>>>>>> 934d9e5c27ea2ffdb58b9f5a0a49aa6b77679fee
   "keywords":["node-red", "Azure", "SQL Database", "SQL"],
   "node-red" :{
       "nodes" : {
@@ -16,16 +26,24 @@
   },
   "repository": {
     "type": "git",
+<<<<<<< HEAD
     "url": "https://github.com/azure/node-red-contrib-azure"
+=======
+    "url": "https://github.com/lcarli/NodeRed-Azure-SQL"
+>>>>>>> 934d9e5c27ea2ffdb58b9f5a0a49aa6b77679fee
   },
   "author": {
     "name": "Lucas Humenhuk",
     "email": "luhumenh@microsoft.com",
     "url": "http://nodered.org"
+<<<<<<< HEAD
   },
   "contributors": [{
     "name": "Rajasa Savant",
     "email": "rasavant@microsoft.com",
     "url": "http://rjsavant.com"
   }]
+=======
+  }
+>>>>>>> 934d9e5c27ea2ffdb58b9f5a0a49aa6b77679fee
 }

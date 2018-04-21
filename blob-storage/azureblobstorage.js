@@ -69,22 +69,18 @@ module.exports = function (RED) {
         clientBlobService = blobService;
         
         clientBlobService.createContainerIfNotExists(containerName, function(err, result, response) {
-            //node.log(result.created);
-            if (!result.created) {
+            if (!err) {
                 node.log("Container '"+ containerName +"' already exists!");
             }
             else {
                 node.log("New container '"+ containerName +"' created!");
             }
-            // The below return statement makes it possible to wait for this function to
-            // return before continuing with the code
-            return result.created;
         });
+        return containerName;
     }
 
     function createBlob(container, blob, accountName, accountKey, file) {
-        var result = createContainer(container, accountName, accountKey);
-        node.log('Creating a blob on ' + result);
+        createContainer(container, accountName, accountKey);
         node.log('Creating a blob on ' + container);
         clientBlobService.createBlockBlobFromLocalFile(container, blob, file, function(err, result, response) {
         if (err) {
