@@ -17,12 +17,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-<<<<<<< HEAD
 # Node.js dependencies
 node_modules/
 
-=======
->>>>>>> f3377e7235f84f65991532eb0e584b3147fdf2ef
 # =========================
 # Operating System Files
 # =========================
@@ -51,3 +48,8 @@ node_modules/
 Network Trash Folder
 Temporary Items
 .apdisk
+<<<<<<< HEAD
+=======
+
+node_modules/*
+>>>>>>> 24c4d1868d8906f2589e2803a3bc2c85d14ff19b
