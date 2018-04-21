@@ -1,0 +1,12 @@
+{
+  "name": "registry_sample",
+  "version": "0.0.1",
+  "private": true,
+  "main": "registry_sample.js",
+  "author": "Microsoft Corp.",
+  "license": "MIT",
+  "dependencies": {
+    "azure-iothub": "1.0.4",
+    "azure-storage": "^0.7.0"
+  }
+}

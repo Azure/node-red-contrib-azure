@@ -101,6 +101,7 @@ module.exports = function (RED) {
         node = this;
         nodeConfig = config;
 
+        node.log("config - " + config);
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
         clientAccountName = this.credentials.accountname;
