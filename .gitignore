@@ -18,7 +18,8 @@ $RECYCLE.BIN/
 *.lnk
 
 # Node.js dependencies
-node_modules/
+node_modules/*
+node_modules
 
 # =========================
 # Operating System Files
@@ -48,11 +49,7 @@ node_modules/
 Network Trash Folder
 Temporary Items
 .apdisk
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
-node_modules/*
->>>>>>> 24c4d1868d8906f2589e2803a3bc2c85d14ff19b
+# VS Code
+.vscode
 =======
->>>>>>> 934d9e5c27ea2ffdb58b9f5a0a49aa6b77679fee
