@@ -1,0 +1,23 @@
+<script type="text/javascript">
+  RED.nodes.registerType('iot-device-method-response', {
+    category: 'output',
+    inputs: 1,
+    defaults: {
+      client: {value:"", type:"iot-device-config"},
+    },
+    label: function () { return this.name || "iot-device-method-response"; },
+    icon: "azureiothub.png",
+    color: '#007FFF'
+  });
+</script>
+
+<script type="text/x-red" data-template-name="iot-device-method-response">
+  <div class="form-row">
+      <label for="node-input-client"><i class="icon-bookmark"></i> Client</label>
+      <input type="text" id="node-input-client">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="iot-device-method-response">
+  <p>Sends response for a specific device method</p>
+</script>

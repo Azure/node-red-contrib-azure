@@ -1,0 +1,36 @@
+{
+  "name": "node-red-contrib-azure-iot-device",
+  "version": "0.0.1",
+  "description": "Node-Red nodes for the Azure IoT Hub Device Client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azure/node-red-contrib-azure.git"
+  },
+  "keywords": [
+    "Azure",
+    "IoT",
+    "Hub"
+  ],
+  "author": "Microsoft Corporation",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/azure/node-red-contrib-azure/issues"
+  },
+  "homepage": "https://github.com/azure/node-red-contrib-azure#readme",
+  "node-red": {
+    "nodes": {
+      "iot-device-config": "iot-device-config.js",
+      "iot-device-send-telemetry": "iot-device-send-telemetry.js",
+      "iot-device-receive-commands": "iot-device-receive-commands.js",
+      "iot-device-method-request": "iot-device-method-request.js",
+      "iot-device-method-response": "iot-device-method-response.js"
+    }
+  },
+  "dependencies": {
+    "azure-iot-common": "^1.5.0",
+    "azure-iot-device": "^1.4.1",
+    "azure-iot-device-amqp": "^1.4.1",
+    "azure-iot-device-http": "^1.4.1",
+    "azure-iot-device-mqtt": "^1.4.1"
+  }
+}
