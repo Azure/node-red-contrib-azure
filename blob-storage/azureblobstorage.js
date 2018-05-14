@@ -82,6 +82,7 @@ module.exports = function (RED) {
     function createBlob(container, blob, accountName, accountKey, file) {
         createContainer(container, accountName, accountKey);
         node.log('Creating a blob on ' + container);
+        node.log('Creating a blob named ' + blob);
         clientBlobService.createBlockBlobFromLocalFile(container, blob, file, function(err, result, response) {
         if (err) {
                 node.error('Error while trying to create blob:' + err.toString());
@@ -116,7 +117,12 @@ module.exports = function (RED) {
             clientAccountName = this.credentials.accountname;
             clientAccountKey = this.credentials.key;
             clientContainerName = this.credentials.container;
-            clientBlobName = this.credentials.blob;
+            if (!this.credentials.blob) {
+                clientBlobName = msg.payload;
+            }
+            else {
+                clientBlobName = this.credentials.blob;
+            }
             
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);

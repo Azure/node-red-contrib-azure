@@ -59,6 +59,8 @@ Follow the instructions [here](http://nodered.org/docs/getting-started/installat
 
 6. Double-click the Azure Save Blob Storage node, enter your Storage Account Name, Storage Account Key and your desired Container Name and Blob Name. Now click Done.
 
+    If you leave the Storage Blob name blank, the text in the msg.payload will be used as your blob name. Eg. if your msg.payload is ```blob1.txt```, and the Storage Blob Name property is empty, the blob name will be assigned as ```blob1```
+
     ![](images/save-blob-node-selected.PNG) 
     
     ![](images/save-blob-node.PNG)
