@@ -21,6 +21,9 @@ $RECYCLE.BIN/
 node_modules
 node_modules/*
 
+# Tar G-Zipped files
+*.tgz
+
 # =========================
 # Operating System Files
 # =========================
