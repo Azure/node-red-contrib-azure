@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lcarli/NodeRed-Azure-Storage-Blob"
+    "url": "https://github.com/Azure/node-red-contrib-azure/blob-storage"
   },
   "author": {
     "name": "Lucas Humenhuk",
