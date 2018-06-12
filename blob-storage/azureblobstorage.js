@@ -119,6 +119,8 @@ module.exports = function (RED) {
             clientContainerName = this.credentials.container;
             if (!this.credentials.blob) {
                 clientBlobName = msg.payload;
+                clientBlobName = clientBlobName.substring(clientBlobName.lastIndexOf('\\')+1, clientBlobName.length); 
+                clientBlobName = clientBlobName.substring(clientBlobName.lastIndexOf('/')+1, clientBlobName.length); 
             }
             else {
                 clientBlobName = this.credentials.blob;
@@ -126,6 +128,7 @@ module.exports = function (RED) {
             
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
+            console.log(clientBlobName);
             createBlob(clientContainerName, clientBlobName, clientAccountName, clientAccountKey, msg.payload);   
         });
 
