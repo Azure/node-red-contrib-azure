@@ -128,7 +128,6 @@ module.exports = function (RED) {
             
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
-            console.log(clientBlobName);
             createBlob(clientContainerName, clientBlobName, clientAccountName, clientAccountKey, msg.payload);   
         });
 
