@@ -1,7 +1,9 @@
+/*jshint esversion: 6 */
 module.exports = function (RED) {
 
     var Client = require('azure-storage');
     var fs = require('fs');
+    var path = require('path');
     var clientBlobService = null;
     var clientAccountName = "";
     var clientAccountKey = "";
@@ -14,25 +16,13 @@ module.exports = function (RED) {
         disconnected: { color: "red", text: "Disconnected" },
         sending: { color: "green", text: "Sending" },
         sent: { color: "blue", text: "Sent message" },
-        error: { color: "grey", text: "Error" }
+        error: { color: "grey", text: "Error" },
+        receiving: { color: "yellow", text: "Receiving" },
+        received: { color: "green", text: "Received message" }
     };
 
     var setStatus = function (status) {
         node.status({ fill: status.color, shape: "dot", text: status.text });
-    };
-
-    var downloadBlob = function (container, blob, filename) {
-        node.log('Downloading data from Azure Blob Storage :\n   blob: ' + blob);
-        clientBlobService.getBlobToStream(container, blob, fs.createWriteStream(filename), function(err, result, response){
-            if (err) {
-                node.error('Error while trying to download file:' + err.toString());
-                setStatus(statusEnum.error);
-            } else {
-                node.log(JSON.stringify(result));
-                setStatus(statusEnum.sent);
-                node.send(filename + ' downloaded and saved at node-red local path');
-            }
-        });
     };
 
     var updateBlob = function (container, blob, file) {
@@ -61,40 +51,8 @@ module.exports = function (RED) {
              clientBlobService = null; 
              setStatus(statusEnum.disconnected); 
          } 
-     }; 
+     };
 
-     function createContainer(containerName, clientAccountName, clientAccountKey) {
-        node.log("Check if container exists, else create a new one");
-        var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
-        clientBlobService = blobService;
-        
-        clientBlobService.createContainerIfNotExists(containerName, function(err, result, response) {
-            if (!err) {
-                node.log("Container '"+ containerName +"' already exists!");
-            }
-            else {
-                node.log("New container '"+ containerName +"' created!");
-            }
-        });
-        return containerName;
-    }
-
-    function createBlob(container, blob, accountName, accountKey, file) {
-        createContainer(container, accountName, accountKey);
-        node.log('Creating a blob on ' + container);
-        node.log('Creating a blob named ' + blob);
-        clientBlobService.createBlockBlobFromLocalFile(container, blob, file, function(err, result, response) {
-        if (err) {
-                node.error('Error while trying to create blob:' + err.toString());
-                setStatus(statusEnum.error);
-         }
-         else {
-             node.log('Blob Created');
-             setStatus(statusEnum.sent);
-             node.send('Blob Created');
-         }
-        });
-    }
 
     // Main function called by Node-RED    
     function AzureBlobStorage(config) {
@@ -102,37 +60,66 @@ module.exports = function (RED) {
         node = this;
         nodeConfig = config;
 
-        node.log("config - " + config);
         // Create the Node-RED node
         RED.nodes.createNode(this, config);
         clientAccountName = this.credentials.accountname;
         clientAccountKey = this.credentials.key;
         clientContainerName = this.credentials.container;
         clientBlobName = this.credentials.blob;
+        var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
 
         this.on('input', function (msg) {
-
+            node.log("Uploading blob...");
             var messageJSON = null;
 
             clientAccountName = this.credentials.accountname;
             clientAccountKey = this.credentials.key;
             clientContainerName = this.credentials.container;
             if (!this.credentials.blob) {
-                clientBlobName = msg.payload;
-                clientBlobName = clientBlobName.substring(clientBlobName.lastIndexOf('\\')+1, clientBlobName.length); 
-                clientBlobName = clientBlobName.substring(clientBlobName.lastIndexOf('/')+1, clientBlobName.length); 
-            }
-            else {
-                clientBlobName = this.credentials.blob;
+                var nameObject = path.parse(msg.payload);
+                clientBlobName = nameObject.base;
             }
             
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
-            createBlob(clientContainerName, clientBlobName, clientAccountName, clientAccountKey, msg.payload);   
+            createContainer(clientContainerName, blobService, function() {
+
+                uploadBlob(msg.payload, blobService, clientContainerName, clientBlobName, function () {
+
+                    node.log("Upload completed!");
+
+                });
+            }); 
         });
 
         this.on('close', function () {
             disconnectFrom(this);
+        });
+    }
+
+    function createContainer (containerName, blobservice, callback) {
+        // Create the container
+        blobservice.createContainerIfNotExists(containerName, function(error) {
+            if (error) {
+                node.log(error);
+            }
+            else {
+                node.log("Container '"+ containerName +"' ready for blob creation");
+                callback();
+            }
+        });
+    }
+
+    function uploadBlob(file, blobService, containerName, blobName, callback) {
+        blobService.createBlockBlobFromLocalFile(containerName, blobName, file, function (error) {
+            if (error) {
+                node.log(error);
+            }
+            else {
+                node.log("Blob '" + blobName + "' uploaded");
+                node.send("Blob '" + blobName + "' uploaded in container '" + containerName +"'");
+                callback();
+            }
         });
     }
 
@@ -147,17 +134,46 @@ module.exports = function (RED) {
         clientAccountKey = node.credentials.key;
         clientContainerName = node.credentials.container;
         clientBlobName = node.credentials.blob;
+        var blobservice = Client.createBlobService(clientAccountName, clientAccountKey);
+        var destinationFile;
 
         this.on('input', function (msg) {
-            node.log('downloading blob');
+            node.log('Downloading blob...');
             // Sending order to Azure Blob Storage
-            createContainer(clientContainerName);
-            setStatus(statusEnum.sending);
-            downloadBlob(clientContainerName, clientBlobName, msg.payload);   
+            //createContainer(clientContainerName);
+            setStatus(statusEnum.receiving);
+
+            node.log("msg.payload" + msg.payload);
+            if (msg.payload) {
+                destinationFile = msg.payload;
+            }
+            else {
+                const fileName = clientBlobName.replace('.txt', '.downloaded.txt');
+                destinationFile = path.join(__dirname, fileName);
+            }
+            
+            node.log("destinationFile" + destinationFile);
+            downloadBlob(blobservice, clientContainerName, clientBlobName, destinationFile, function() {
+                node.log("Download completed!");
+            });   
+            setStatus(statusEnum.received);
         });
 
         this.on('close', function () {
             disconnectFrom(this);
+        });
+    }
+
+    function downloadBlob(blobservice, containerName, blobName, fileName, callback) {
+        blobservice.getBlobToLocalFile(containerName, blobName, fileName, function (error2) {
+            if (error2) {
+                node.log(error);
+            }
+            else {
+                node.log("Blob '"+ blobName + "' is downloaded successfully!");
+                node.send("Blob '" + blobName + "' is downloaded successfully at '" + path.dirname(fileName) +"'");
+                callback();
+            }
         });
     }
 
