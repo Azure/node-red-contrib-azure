@@ -1,0 +1,157 @@
+{
+	"Hoda": {
+		"locale":"ar-EG",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (ar-EG, Hoda)"
+	},
+	"Hedda": {
+		"locale":"de-DE",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (de-DE, Hedda)"
+	},
+	"Stefan": {
+		"locale":"de-DE",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (de-DE, Stefan, Apollo)"
+	},
+	"Catherine": {
+		"locale":"en-AU",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-AU, Catherine)"
+	},
+	"Linda": {
+		"locale":"en-CA",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-CA, Linda)"
+	},
+	"Susan": {
+		"locale":"en-GB",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-GB, Susan, Apollo)"
+	},
+	"George": {
+		"locale":"en-GB",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-GB, George, Apollo)"
+	},
+	"Ravi": {
+		"locale":"en-IN",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-IN, Ravi, Apollo)"
+	},
+	"Zira": {
+		"locale":"en-US",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-US, ZiraRUS)"
+	},
+	"Benjamin": {
+		"locale":"en-US",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (en-US, BenjaminRUS)"
+	},
+	"Laura": {
+		"locale":"es-ES",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (es-ES, Laura, Apollo)"
+	},
+	"Pablo": {
+		"locale":"es-ES",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (es-ES, Pablo, Apollo)"
+	},
+	"Raul": {
+		"locale":"es-MX",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (es-MX, Raul, Apollo)"
+	},
+	"Caroline": {
+		"locale":"fr-CA",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (fr-CA, Caroline)"
+	},
+	"Julie": {
+		"locale":"fr-FR",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (fr-FR, Julie, Apollo)"
+	},
+	"Paul": {
+		"locale":"fr-FR",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (fr-FR, Paul, Apollo)"
+	},
+	"Kalpana": {
+		"locale":"hi-IN",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (hi-IN, Kalpana, Apollo)"
+	},
+	"Cosimo": {
+		"locale":"it-IT",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (it-IT, Cosimo, Apollo)"
+	},
+	"Ayumi": {
+		"locale":"ja-JP",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (ja-JP, Ayumi, Apollo)"
+	},
+	"Ichiro": {
+		"locale":"ja-JP",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (ja-JP, Ichiro, Apollo)"
+	},
+	"Heami": {
+		"locale":"ko-KR",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (ko-KR,HeamiRUS)"
+	},
+	"Daniel": {
+		"locale":"pt-BR",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (pt-BR, Daniel, Apollo)"
+	},
+	"Irina": {
+		"locale":"ru-RU",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (ru-RU, Irina, Apollo)"
+	},
+	"Pavel": {
+		"locale":"ru-RU",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (ru-RU, Pavel, Apollo)"
+	},
+	"Huihui": {
+		"locale":"zh-CN",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-CN, HuihuiRUS)"
+	},
+	"Yaoyao": {
+		"locale":"zh-CN",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-CN, Yaoyao, Apollo)"
+	},
+	"Kangkang": {
+		"locale":"zh-CN",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-CN, Kangkang, Apollo)"
+	},
+	"Tracy": {
+		"locale":"zh-HK",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-HK, Tracy, Apollo)"
+	},
+	"Danny": {
+		"locale":"zh-HK",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-HK, Danny, Apollo)"
+	},
+	"Yating": {
+		"locale":"zh-TW",
+		"gender":"Female",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-TW, Yating, Apollo)"
+	},
+	"Zhiwei": {
+		"locale":"zh-TW",
+		"gender":"Male",
+		"name":"Microsoft Server Speech Text to Speech Voice (zh-TW, Zhiwei, Apollo)"
+	}
+}

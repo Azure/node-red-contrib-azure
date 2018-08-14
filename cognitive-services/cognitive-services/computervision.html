@@ -1,0 +1,64 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Computer Vision', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            operation: {
+                value: "description",
+                required: true
+            },
+            name: {
+                value:""
+            }
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "computervision.png",
+        label: function() {
+            return this.name||"Computer Vision";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Computer Vision">
+    <div class="form-row">
+        <label for="node-input-operation"><i class="icon-tag"></i> Operation (<a href="https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fa" target="_blank">See details</a>)</label>
+        <select type="text" id="node-input-operation">
+            <option value="tags">Tags</option>
+            <option value="description">Description</option>
+            <option value="age">Face Age</option>
+            <option value="gender">Face Gender</option>
+            <option value="adult">Adult Score</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Computer Vision">
+    <p>Computer Vision API in Microsoft Cognitive Services</p>
+    <p>This API extracts object parameters from Image data.</p>
+    <p><b>Image URL</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data which contains Image URL</li>
+            <li>Output(<code>msg.payload</code>): Object parameters</li>
+        </ul>
+    </p>
+    <p><b>Binary image</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): Buffer data from file-in node</li>
+            <li>Output(<code>msg.payload</code>): Object parameters</li>
+        </ul>
+    </p>
+</script>

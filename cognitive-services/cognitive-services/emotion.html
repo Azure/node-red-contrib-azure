@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Emotion', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            name: {
+                value:""
+            }
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "emotion.png",
+        label: function() {
+            return this.name||"Emotion";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Emotion">
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Emotion">
+    <p>Emotion API in Microsoft Cognitive Services</p>
+    <p>This API calcurates face emotion parameters from Image data. Face emotion parameters are anger, contempt, disgust, fear, happiness, neutral, sadness and surprise.</p>
+    <p><b>Image URL</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data which contains Image URL</li>
+            <li>Output(<code>msg.payload</code>): Emotion parameters</li>
+        </ul>
+    </p>
+    <p><b>Binary image</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): Buffer data from file-in node</li>
+            <li>Output(<code>msg.payload</code>): Emotion parameters</li>
+        </ul>
+    </p>
+</script>

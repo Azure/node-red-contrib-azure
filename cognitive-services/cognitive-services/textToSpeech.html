@@ -1,0 +1,112 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Text To Speech', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            name: {value:""},
+            appId: {value:""},
+            userAgent: {value:"Linux"},
+            voice: {value:"Zira"},
+            outputFormat: {value:"riff-16khz-16bit-mono-pcm"},
+            outputPayloadType: {value:"stream"}
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "speech.png",
+        label: function() {
+            return this.name||"Text To Speech";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Text To Speech">
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appId"><i class="icon-tag"></i> Application ID</label>
+        <input type="text" id="node-input-appId" placeholder="AppId">
+    </div>
+    <div class="form-row">
+        <label for="node-input-userAgent"><i class="icon-tag"></i> User Agent</label>
+        <input type="text" id="node-input-userAgent" placeholder="UserAgent">
+    </div>
+    <div class="form-row">
+        <label for="node-input-voice"><i class="icon-tag"></i> Voice</label>
+        <select id="node-input-voice" placeholder="Voice">
+			<option value="Hoda">Hoda (ar-EG, Female)</option>
+			<option value="Hedda">Hedda (de-DE, Female)</option>
+			<option value="Stefan">Stefan (de-DE, Male)</option>
+			<option value="Catherine">Catherine (en-AU, Female)</option>
+			<option value="Linda">Linda (en-CA, Female)</option>
+			<option value="Susan">Susan (en-GB, Female)</option>
+			<option value="George">George (en-GB, Male)</option>
+			<option value="Ravi">Ravi (en-IN, Male)</option>
+			<option value="Zira">Zira (en-US, Female)</option>
+			<option value="Benjamin">Benjamin (en-US, Male)</option>
+			<option value="Laura">Laura (es-ES, Female)</option>
+			<option value="Pablo">Pablo (es-ES, Male)</option>
+			<option value="Raul">Raul (es-MX, Male)</option>
+			<option value="Caroline">Caroline (fr-CA, Female)</option>
+			<option value="Julie">Julie (fr-FR, Female)</option>
+			<option value="Paul">Paul (fr-FR, Male)</option>
+			<option value="Kalpana">Kalpana (hi-IN, Female)</option>
+			<option value="Cosimo">Cosimo (it-IT, Male)</option>
+			<option value="Ayumi">Ayumi (ja-JP, Female)</option>
+			<option value="Ichiro">Ichiro (ja-JP, Male)</option>
+			<option value="Heami">Heami (ko-KR, Female)</option>
+			<option value="Daniel">Daniel (pt-BR, Male)</option>
+			<option value="Irina">Irina (ru-RU, Female)</option>
+			<option value="Pavel">Pavel (ru-RU, Male)</option>
+			<option value="Huihui">Huihui (zh-CN, Female)</option>
+			<option value="Yaoyao">Yaoyao (zh-CN, Female)</option>
+			<option value="Kangkang">Kangkang (zh-CN, Male)</option>
+			<option value="Tracy">Tracy (zh-HK, Female)</option>
+			<option value="Danny">Danny (zh-HK, Male)</option>
+			<option value="Yating">Yating (zh-TW, Female)</option>
+			<option value="Zhiwei">Zhiwei (zh-TW, Male)</option>
+		</select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputFormat"><i class="icon-tag"></i> Output format</label>
+        <select id="node-input-outputFormat" placeholder="OutputFormat">
+			<option value="ssml-16khz-16bit-mono-tts">Ssml 16khz 16bit Mono TTS</option>
+			<option value="raw-16khz-16bit-mono-pcm">Raw 16khz 16bit Mono PCM</option>
+			<option value="riff-16khz-16bit-mono-pcm">Riff 16khz 16bit Mono PCM</option>
+			<option value="riff-16khz-16kbps-mono-siren">Riff 16khz 16kbps Mono Siren</option>
+			<option value="audio-16khz-16kbps-mono-siren">Audio 16khz 16kbps Mono Siren</option>
+			<option value="audio-16khz-32kbitrate-mono-mp3">Audio 16khz 32kbitrate Mono mp3</option>
+			<option value="audio-16khz-64kbitrate-mono-mp3">Audio 16khz 64kbitrate Mono mp3</option>
+			<option value="audio-16khz-128kbitrate-mono-mp3">Audio 16khz 128kbitrate Mono mp3</option>
+		</select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputPayloadType"><i class="icon-tag"></i> Output payload type</label>
+        <select id="node-input-outputPayloadType" placeholder="OutputPayloadType">
+			<option value="stream">Stream</option>
+			<option value="buffer">Buffer</option>
+		</select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Text To Speech">
+    <p>Speech API in Microsoft Cognitive Services</p>
+    <p>This API convert text to speech</p>
+    <p><b>Text To Speech</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): Text</li>
+            <li>Output(<code>msg.payload</code>): Readable stream or Buffer (buffer is sent in many time)</li>
+            <li>Output(<code>msg.event</code>): Only with Buffer output payload type - 'data' for each buffer sent, and 'end' for the last buffer</li>
+        </ul>
+    </p>
+</script>
