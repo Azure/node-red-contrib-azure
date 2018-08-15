@@ -1,0 +1,61 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Web Language Model', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            operation: {
+                value: "cjp",
+                required: true
+            },
+            name: {
+                value:""
+            }
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "weblm.png",
+        label: function() {
+            return this.name||"Web Language Model";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Web Language Model">
+    <div class="form-row">
+        <label for="node-input-operation"><i class="icon-tag"></i> Operation (<a href="https://dev.projectoxford.ai/docs/services/55de9ca4e597ed1fd4e2f104/operations/55de9ca4e597ed19b0de8a51" target="_blank">See details</a>)</label>
+        <select type="text" id="node-input-operation">
+            <option value="cjp">Calculate Joint Probability</option>
+            <option value="lam">List Available Models</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Web Language Model">
+    <p>Web Language Model API in Microsoft Cognitive Services</p>
+    <p>This API calcurates the probability of words in Bing web data.</p>
+    <p><b>Calculate Joint Probability</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data to calculate probability</li>
+            <li>Output(<code>msg.payload</code>): Probability of String data</li>
+        </ul>
+    </p>
+    <p><b>List Available Models</b>
+        <ul>
+            <li>Input: Trigger from inject node</li>
+            <li>Output(<code>msg.payload</code>): List of Models</li>
+        </ul>
+    </p>
+</script>

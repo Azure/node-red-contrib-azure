@@ -1,0 +1,54 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Bing Video Search', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            operation: {
+                value: "search",
+                required: true
+            },
+            name: {
+                value:""
+            }
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "videosearch.png",
+        label: function() {
+            return this.name||"Bing Video Search";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Bing Video Search">
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Bing Video Search">
+    <p>Bing Video Search API in Microsoft Cognitive Services</p>
+    <p>This API searches video contents in Bing web data.</p>
+    <p><b>Search</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data to search</li>
+            <li>Output(<code>msg.payload</code>): List of URL</li>
+        </ul>
+    </p>
+    <p><b>Trending</b>
+        <ul>
+            <li>Input: Trigger from inject node</li>
+            <li>Output(<code>msg.payload</code>): List of URL</li>
+        </ul>
+    </p>
+</script>

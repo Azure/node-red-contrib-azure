@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Face', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            name: {
+                value:""
+            }
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Face";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Face">
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Face">
+    <p>Face API in Microsoft Cognitive Services</p>
+    <p>This API calcurates face face parameters from Image data.</p>
+    <p><b>Image URL</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data which contains Image URL</li>
+            <li>Output(<code>msg.payload</code>): Face parameters</li>
+        </ul>
+    </p>
+    <p><b>Binary image</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): Buffer data from file-in node</li>
+            <li>Output(<code>msg.payload</code>): Face parameters</li>
+        </ul>
+    </p>
+</script>

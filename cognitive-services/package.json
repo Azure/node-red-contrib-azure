@@ -1,0 +1,68 @@
+{
+  "name": "node-red-contrib-cognitive-services",
+  "version": "0.5.3",
+  "description": "Microsoft Cognitive Services",
+  "dependencies": {
+    "request": "*",
+    "xml2js": "*",
+    "isstream": "*",
+    "uuid": "*"
+  },
+  "keywords": [
+    "node-red",
+    "microsoft",
+    "azure",
+    "cognitive services",
+    "bing",
+    "computer vision",
+    "emotion",
+    "face",
+    "spell check",
+    "linguistic analysis",
+    "text analytics",
+    "web language model",
+    "news search"
+  ],
+  "node-red": {
+    "nodes": {
+      "computervision": "cognitive-services/computervision.js",
+      "emotion": "cognitive-services/emotion.js",
+      "face": "cognitive-services/face.js",
+      "speechtotext": "cognitive-services/speechToText.js",
+      "texttospeech": "cognitive-services/textToSpeech.js",
+      "spellcheck": "cognitive-services/spellcheck.js",
+      "linguisticanalysis": "cognitive-services/linguisticanalysis.js",
+      "textanalytics": "cognitive-services/textanalytics.js",
+      "translator": "cognitive-services/translator.js",
+      "weblm": "cognitive-services/weblm.js",
+      "imagesearch": "cognitive-services/imagesearch.js",
+      "newssearch": "cognitive-services/newssearch.js",
+      "videosearch": "cognitive-services/videosearch.js",
+      "websearch": "cognitive-services/websearch.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zuhito/node-red-contrib-cognitive-services.git"
+  },
+  "author": {
+    "name": "zuhito"
+  },
+  "contributors": [
+    {
+      "name": "mattvador"
+    }
+  ],
+  "license": "Apache-2.0",
+  "readmeFilename": "README.md",
+  "gitHead": "ff0315f81437af3c66053c101e342d71e8613210",
+  "bugs": {
+    "url": "https://github.com/zuhito/node-red-contrib-cognitive-services/issues"
+  },
+  "homepage": "https://github.com/zuhito/node-red-contrib-cognitive-services#readme",
+  "_id": "node-red-contrib-cognitive-services@0.3.3",
+  "scripts": {},
+  "_shasum": "2b2840a5e7b516f0ac53aabef55832a5b1c840e4",
+  "_from": "node-red-contrib-cognitive-services@latest",
+  "readme": "node-red-contrib-cognitive-services\r\n===================================\r\n\r\nNode-RED nodes for Microsoft Cognitive Services APIs\r\n\r\nMicrosoft Cognitive Services are Cognitive APIs on Azure.\r\nCurrently this npm package supports the following APIs.\r\n- Vision\r\n    - Computer Vision API\r\n    - Emotion API\r\n    - Face API\r\n- Speech\r\n    - Speech To Text API\r\n    - Text To Speech API\r\n- Language\r\n    - Bing Spell Check API\r\n    - Linguistic Analysis API\r\n    - Text Analytics API\r\n    - Web Language Model API\r\n- Search\r\n    - Bing Image Search API\r\n    - Bing News Search API\r\n    - Bing Video Search API\r\n\r\n## Example flows\r\n![flows](https://raw.githubusercontent.com/zuhito/node-red-contrib-cognitive-services/master/flows.png)\r\n\r\n## Install\r\nRun the following npm command in your Node-RED environment.\r\n```\r\nnpm install -g node-red-contrib-cognitive-services\r\n```\r\n\r\n## Usage\r\nShow node property and input subscription key from Azure portal.\r\n\r\n## Microsoft Cognitive Services website\r\nhttps://www.microsoft.com/cognitive-services\r\n\r\n## Examples using Cognitive Services nodes\r\n- MachineEye using Computer Vision API: http://www.instructables.com/id/MachineEye/?ALLSTEPS\r\n- Node-RED Docker image for Azure nodes: https://hub.docker.com/r/dwaiba/azureiot-nodered/\r\n"
+}

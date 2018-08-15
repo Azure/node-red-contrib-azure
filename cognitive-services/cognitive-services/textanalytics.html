@@ -1,0 +1,68 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Text Analytics', {
+        category: 'analysis',
+        color: '#049580',
+        defaults: {
+            operation: {
+                value: "sentiment",
+                required: true
+            },
+            name: {
+                value:""
+            }
+        },
+        credentials: {
+           key: {
+               type: "password"
+            }
+        },
+        inputs:1,
+        outputs:1,
+        icon: "textanalytics.png",
+        label: function() {
+            return this.name||"Text Analytics";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Text Analytics">
+    <div class="form-row">
+        <label for="node-input-operation"><i class="icon-tag"></i> Operation (<a href="https://westus.dev.cognitive.microsoft.com/docs/services/TextAnalytics.V2.0/operations/56f30ceeeda5650db055a3c7" target="_blank">See details</a>)</label>
+        <select type="text" id="node-input-operation">
+            <option value="detectlanguage">Detect Language</option>
+            <option value="keyphrases">Key Phrases</option>
+            <option value="sentiment">Sentiment</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
+        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Text Analytics">
+    <p>Text Analytics API in Microsoft Cognitive Services</p>
+    <p>This API analyzes text data.</p>
+    <p><b>Detect Language</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data to detect Language</li>
+            <li>Output(<code>msg.payload</code>): Detected language</li>
+        </ul>
+    </p>
+    <p><b>Key Phrases</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data to extract key phrasese</li>
+            <li>Output(<code>msg.payload</code>): Extracted key phrasese</li>
+        </ul>
+    </p>
+    <p><b>Sentiment</b>
+        <ul>
+            <li>Input(<code>msg.payload</code>): String data to analyze sentiment</li>
+            <li>Output(<code>msg.payload</code>): Positive parameter</li>
+        </ul>
+    </p>
+</script>
