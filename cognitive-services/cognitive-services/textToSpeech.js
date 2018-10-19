@@ -60,7 +60,8 @@ module.exports = function(RED) {
 						'X-Search-AppId' : config.appId,
 						'X-Search-ClientID' : node.Id,
 						'X-Microsoft-OutputFormat' : config.outputFormat,
-						'User-Agent' : config.userAgent
+						'User-Agent' : config.userAgent,
+						'Content-Type': 'application/ssml+xml'
 					},
 					body : xmlContent.replace(/\{(.+?)\}/g, function(match, index) {
 						if( index == "payload" )
