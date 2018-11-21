@@ -84,7 +84,7 @@ module.exports = function(RED) {
 					}
 
 					if( response.statusCode != '200' ) {
-						node.error("Error with text to speech : response status - " + response, msg);
+						node.error("Error with text to speech : response status - " + JSON.stringify(response), msg);
 						node.status({fill: "red", shape: "ring", text: "Error"});
 						return;
 					}
