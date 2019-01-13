@@ -16,12 +16,18 @@ module.exports = function(RED)
                 node.status({fill: "red", shape: "ring", text: "Error"});
                 console.log("Input subscription key");
             }
+            else if (this.region == null || this.region == "")
+            {
+                node.error("Input region to use", msg);
+                node.status({fill: "red", shape: "ring", text: "Error"});
+                console.log("Input region to use");
+            }
             else
             {
                 if (config.operation == "detectlanguage") // Detect Language
                 {
                     var options = {
-                        url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/languages',
+                        url: 'https://' + config.region + '.api.cognitive.microsoft.com/text/analytics/v2.0/languages',
                         method: 'POST',
                         headers: {
                             'Ocp-Apim-Subscription-Key': this.credentials.key,
@@ -82,7 +88,7 @@ module.exports = function(RED)
                 else if (config.operation == "keyphrases") // Key Phrases
                 {
                     var options = {
-                        url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases',
+                        url: 'https://' + config.region + '.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases',
                         method: 'POST',
                         headers: {
                             'Ocp-Apim-Subscription-Key': this.credentials.key,
@@ -91,7 +97,7 @@ module.exports = function(RED)
                         json: {
                             "documents": [
                                 {
-                                    "language": "en",
+                                    "language": "en", // TODO: allow for setting language in config or extra msg attribute
                                     "id": "0",
                                     "text": msg.payload
                                 }
@@ -144,7 +150,7 @@ module.exports = function(RED)
                 else if (config.operation == "sentiment") // Sentiment
                 {
                     var options = {
-                        url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment',
+                        url: 'https://' + config.region + '.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment',
                         method: 'POST',
                         headers: {
                             'Ocp-Apim-Subscription-Key': this.credentials.key,
@@ -153,7 +159,7 @@ module.exports = function(RED)
                         json: {
                             "documents": [
                                 {
-                                    "language": "en",
+                                    "language": "en", // TODO: allow for setting language in config or extra msg attribute
                                     "id": "0",
                                     "text": msg.payload
                                 }
