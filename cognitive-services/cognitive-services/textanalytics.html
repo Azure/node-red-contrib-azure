@@ -7,6 +7,10 @@
                 value: "sentiment",
                 required: true
             },
+            region: {
+                value: "",
+                required: true // TODO: validate region name (should be common code across all Azure nodes)
+            },
             name: {
                 value:""
             }
@@ -35,8 +39,12 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-region"><i class="icon-tag"></i>Region Name</label>
+        <input type="text" id="node-input-key" placeholder="region (westus, westeurope, etc.)">
+    </div>
+    <div class="form-row">
         <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
-        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+        <input type="password" id="node-input-key" placeholder="subscription keyn">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
