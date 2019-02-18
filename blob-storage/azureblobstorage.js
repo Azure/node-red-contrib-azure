@@ -167,7 +167,7 @@ module.exports = function (RED) {
     function downloadBlob(blobservice, containerName, blobName, fileName, callback) {
         blobservice.getBlobToLocalFile(containerName, blobName, fileName, function (error2) {
             if (error2) {
-                node.log(error);
+                node.log(error2);
             }
             else {
                 node.log("Blob '"+ blobName + "' is downloaded successfully!");
