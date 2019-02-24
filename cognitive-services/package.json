@@ -43,7 +43,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zuhito/node-red-contrib-cognitive-services.git"
+    "url": "git+https://github.com/Azure/node-red-contrib-azure.git"
   },
   "author": {
     "name": "zuhito"
