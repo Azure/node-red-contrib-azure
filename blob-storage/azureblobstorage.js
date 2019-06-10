@@ -76,8 +76,9 @@ module.exports = function (RED) {
             clientAccountKey = this.credentials.key;
             clientContainerName = this.credentials.container;
             if (!this.credentials.blob) {
-                var nameObject = path.parse(msg.payload);
-                clientBlobName = nameObject.base;
+                //var nameObject = path.parse(msg.payload);
+                //clientBlobName = nameObject.base;
+				clientBlobName = msg.filename;
             }
             
             // Sending data to Azure Blob Storage
@@ -178,7 +179,7 @@ module.exports = function (RED) {
     }
 
     // Registration of the node into Node-RED
-    RED.nodes.registerType("Save Blob", AzureBlobStorage, {
+    RED.nodes.registerType("Save Blobb", AzureBlobStorage, {
         credentials: {
             accountname: { type: "text" },
             key: { type: "text" },
@@ -191,7 +192,7 @@ module.exports = function (RED) {
     });
 
     // Registration of the node into Node-RED to download
-    RED.nodes.registerType("Get Blob", AzureBlobStorageDownload, {
+    RED.nodes.registerType("Get Blobb", AzureBlobStorageDownload, {
         credentials: {
             accountname: { type: "text" },
             key: { type: "text" },
