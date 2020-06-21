@@ -65,20 +65,27 @@ module.exports = function (RED) {
         clientAccountName = this.credentials.accountname;
         clientAccountKey = this.credentials.key;
         clientContainerName = this.credentials.container;
-        clientBlobName = this.credentials.blob;
+        
         var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
 
         this.on('input', function (msg) {
             node.log("Uploading blob...");
             var messageJSON = null;
-
+            if(!this.credentials.blob)
+            {
+                clientBlobName = msg.blobname;;
+            }
+            else
+            {
+                clientBlobName = this.credentials.blob;
+            }
             clientAccountName = this.credentials.accountname;
             clientAccountKey = this.credentials.key;
             clientContainerName = this.credentials.container;
-            if (!this.credentials.blob) {
-                var nameObject = path.parse(msg.payload);
-                clientBlobName = nameObject.base;
-            }
+            // if (!this.credentials.blob) {
+            //     var nameObject = path.parse(msg.payload);
+            //     clientBlobName = nameObject.base;
+            // }
             
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
