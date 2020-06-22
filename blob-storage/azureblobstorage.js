@@ -73,7 +73,7 @@ module.exports = function (RED) {
             var messageJSON = null;
             if(!this.credentials.blob)
             {
-                clientBlobName = msg.blobname;;
+                clientBlobName = msg.blobname;
             }
             else
             {
