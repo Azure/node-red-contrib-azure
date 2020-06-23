@@ -64,7 +64,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         clientAccountName = this.credentials.accountname;
         clientAccountKey = this.credentials.key;
-        clientContainerName = this.credentials.container;
+        
         
         var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
 
@@ -79,9 +79,17 @@ module.exports = function (RED) {
             {
                 clientBlobName = this.credentials.blob;
             }
+            if(!this.credentials.container)
+            {
+                clientContainerName = msg.container;
+            }
+            else
+            {
+                clientContainerName = this.credentials.container;
+            }
             clientAccountName = this.credentials.accountname;
             clientAccountKey = this.credentials.key;
-            clientContainerName = this.credentials.container;
+            //clientContainerName = this.credentials.container;
             // if (!this.credentials.blob) {
             //     var nameObject = path.parse(msg.payload);
             //     clientBlobName = nameObject.base;
@@ -124,7 +132,9 @@ module.exports = function (RED) {
             }
             else {
                 node.log("Blob '" + blobName + "' uploaded");
-                node.send("Blob '" + blobName + "' uploaded in container '" + containerName +"'");
+                console.log("Blob '" + blobName + "' uploaded in container '" + containerName +"'");
+                msg.azurl = 'https://whoblobstorage.blob.core.windows.net/'+containerName + '/'+blobName;
+                node.send(msg);
                 callback();
             }
         });
