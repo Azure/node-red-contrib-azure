@@ -69,42 +69,47 @@ module.exports = function (RED) {
         var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
 
         this.on('input', function (msg) {
-            node.log("Uploading blob...");
-            var messageJSON = null;
-            if(!this.credentials.blob)
-            {
-                clientBlobName = msg.blobname;
+            try {
+                node.log("Uploading blob...");
+                var messageJSON = null;
+                if(!this.credentials.blob)
+                {
+                    clientBlobName = msg.blobname;
+                }
+                else
+                {
+                    clientBlobName = this.credentials.blob;
+                }
+                if(!this.credentials.container)
+                {
+                    clientContainerName = msg.container;
+                }
+                else
+                {
+                    clientContainerName = this.credentials.container;
+                }
+                clientAccountName = this.credentials.accountname;
+                clientAccountKey = this.credentials.key;
+                //clientContainerName = this.credentials.container;
+                // if (!this.credentials.blob) {
+                //     var nameObject = path.parse(msg.payload);
+                //     clientBlobName = nameObject.base;
+                // }
+                
+                // Sending data to Azure Blob Storage
+                setStatus(statusEnum.sending);
+                createContainer(clientContainerName, blobService, function() {
+
+                    uploadBlob(msg, msg.payload, blobService, clientContainerName, clientBlobName, function () {
+
+                        node.log("Upload completed!");
+
+                    });
+                }); 
+            } catch (error) {
+                node.log(error);
             }
-            else
-            {
-                clientBlobName = this.credentials.blob;
-            }
-            if(!this.credentials.container)
-            {
-                clientContainerName = msg.container;
-            }
-            else
-            {
-                clientContainerName = this.credentials.container;
-            }
-            clientAccountName = this.credentials.accountname;
-            clientAccountKey = this.credentials.key;
-            //clientContainerName = this.credentials.container;
-            // if (!this.credentials.blob) {
-            //     var nameObject = path.parse(msg.payload);
-            //     clientBlobName = nameObject.base;
-            // }
             
-            // Sending data to Azure Blob Storage
-            setStatus(statusEnum.sending);
-            createContainer(clientContainerName, blobService, function() {
-
-                uploadBlob(msg.payload, blobService, clientContainerName, clientBlobName, function () {
-
-                    node.log("Upload completed!");
-
-                });
-            }); 
         });
 
         this.on('close', function () {
@@ -125,7 +130,7 @@ module.exports = function (RED) {
         });
     }
 
-    function uploadBlob(file, blobService, containerName, blobName, callback) {
+    function uploadBlob(msg,file, blobService, containerName, blobName, callback) {
         blobService.createBlockBlobFromLocalFile(containerName, blobName, file, function (error) {
             if (error) {
                 node.log(error);
