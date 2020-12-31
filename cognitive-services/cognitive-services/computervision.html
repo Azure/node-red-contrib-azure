@@ -1,10 +1,14 @@
 <script type="text/javascript">
     RED.nodes.registerType('Computer Vision', {
-        category: 'analysis',
+        category: 'Microsoft Cognitive Services',
         color: '#049580',
         defaults: {
             operation: {
-                value: "description",
+                value: "Description",
+                required: true
+            },
+            endpoint: {
+                value: "https://westus.api.cognitive.microsoft.com/",
                 required: true
             },
             name: {
@@ -27,18 +31,23 @@
 
 <script type="text/x-red" data-template-name="Computer Vision">
     <div class="form-row">
-        <label for="node-input-operation"><i class="icon-tag"></i> Operation (<a href="https://dev.projectoxford.ai/docs/services/56f91f2d778daf23d8ec6739/operations/56f91f2e778daf14a499e1fa" target="_blank">See details</a>)</label>
+        <label for="node-input-operation"><i class="icon-tag"></i> Operation (<a href="https://westcentralus.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-1-ga/operations/56f91f2e778daf14a499f21b" target="_blank">Documentation</a>)</label>
         <select type="text" id="node-input-operation">
-            <option value="tags">Tags</option>
-            <option value="description">Description</option>
-            <option value="age">Face Age</option>
-            <option value="gender">Face Gender</option>
-            <option value="adult">Adult Score</option>
+            <option value="Adult">Adult Score</option>
+            <option value="Color">Color</option>
+            <option value="Description">Description</option>
+            <option value="Faces Age">Face Age</option>
+            <option value="Faces Gender">Face Gender</option>
+            <option value="Tags">Tags</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-key"><i class="icon-tag"></i> Subscription (<a href="https://www.microsoft.com/cognitive-services" target="_blank">Get key</a>)</label>
-        <input type="password" id="node-input-key" placeholder="Paste subscription key of West US region">
+        <label for="node-input-endpoint"><i class="icon-tag"></i> Endpoint </label>
+        <input type="text" id="node-input-endpoint" placeholder="Paste endpoint url from 'Keys and Endpoints'">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Key </label>
+        <input type="password" id="node-input-key" placeholder="Paste key from 'Keys and Endpoints'">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name (Optional)</label>
