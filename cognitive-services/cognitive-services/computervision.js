@@ -18,6 +18,7 @@ module.exports = function(RED)
                 node.status({fill: "red", shape: "ring", text: "Error"});
                 console.log("Input subscription key");
             }
+            // 2020-12-31 DM
             else if (config.endpoint == null || config.endpoint == "")
             {
                 node.error("Input endpoint address", msg);
@@ -27,6 +28,7 @@ module.exports = function(RED)
             else
             {
                 var options = null;
+                // 2020-12-31 DM
                 //var endpoint = "https://westus.api.cognitive.microsoft.com/";
                 var endpoint = config.endpoint;
                 //var visualFeatures = "Categories,Tags,Description,Faces,ImageType,Color,Adult";
@@ -73,7 +75,7 @@ module.exports = function(RED)
                                 {
                                     if (config.operation == "Tags") // Tags
                                     {
-                                        if (body.tags.length > 0 && body.categories[0].name != null)
+                                        if (body.tags.length > 0)
                                         {
                                             var tmp = body.tags.sort(function(a, b) {
                                                 return b.confidence - a.confidence;
