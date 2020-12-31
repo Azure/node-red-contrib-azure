@@ -1,3 +1,6 @@
+// https://github.com/Azure/node-red-contrib-azure/blob/master/cognitive-services/cognitive-services/computervision.js
+// https://westcentralus.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-1-ga/operations/56f91f2e778daf14a499f21b
+
 var request = require('request');
 
 module.exports = function(RED)
@@ -15,13 +18,23 @@ module.exports = function(RED)
                 node.status({fill: "red", shape: "ring", text: "Error"});
                 console.log("Input subscription key");
             }
+            else if (config.endpoint == null || config.endpoint == "")
+            {
+                node.error("Input endpoint address", msg);
+                node.status({fill: "red", shape: "rint", text: "Error"});
+                console.log("Input endpoint address");
+            }
             else
             {
                 var options = null;
+                //var endpoint = "https://westus.api.cognitive.microsoft.com/";
+                var endpoint = config.endpoint;
+                //var visualFeatures = "Categories,Tags,Description,Faces,ImageType,Color,Adult";
+                var visualFeatures = config.operation.split(" ")[0];
                 if (Buffer.isBuffer(msg.payload))
                 {
                     options = {
-                        url: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Categories,Tags,Description,Faces,ImageType,Color,Adult',
+                        url: endpoint + 'vision/v3.1/analyze?visualFeatures=' + visualFeatures,
                         method: 'POST',
                         headers: {
                             'Ocp-Apim-Subscription-Key': this.credentials.key,
@@ -33,7 +46,7 @@ module.exports = function(RED)
                 else if (typeof(msg.payload) == 'string' && (msg.payload.indexOf('http://') === 0 || msg.payload.indexOf('https://') === 0))
                 {
                     options = {
-                        url: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Categories,Tags,Description,Faces,ImageType,Color,Adult',
+                        url: endpoint + 'vision/v3.1/analyze?visualFeatures=' + visualFeatures,
                         method: 'POST',
                         headers: {
                             'Ocp-Apim-Subscription-Key': this.credentials.key,
@@ -58,7 +71,7 @@ module.exports = function(RED)
                                 console.log("response.statusCode=" + response.statusCode + ", body=" + JSON.stringify(body));
                                 if (response.statusCode == 200 && body != null)
                                 {
-                                    if (config.operation == "tags") // Tags
+                                    if (config.operation == "Tags") // Tags
                                     {
                                         if (body.tags.length > 0 && body.categories[0].name != null)
                                         {
@@ -80,7 +93,7 @@ module.exports = function(RED)
                                         node.send(msg);
                                         node.status({});
                                     }
-                                    else  if (config.operation == "description") // Description
+                                    else  if (config.operation == "Description") // Description
                                     {
                                         if (body != null && body.description != null && body.description.captions != null && body.description.captions.length > 0)
                                         {
@@ -97,7 +110,7 @@ module.exports = function(RED)
                                         node.send(msg);
                                         node.status({});
                                     }
-                                    else  if (config.operation == "age") // Faces(age)
+                                    else  if (config.operation == "Faces Age") // Faces(age)
                                     {
                                         if (body.faces != null && body.faces.length > 0 && body.faces[0].age != null)
                                         {
@@ -111,7 +124,7 @@ module.exports = function(RED)
                                         node.send(msg);
                                         node.status({});
                                     }
-                                    else  if (config.operation == "gender") // Faces(gender)
+                                    else  if (config.operation == "Faces Gender") // Faces(gender)
                                     {
                                         if (body.faces != null && body.faces.length > 0 && body.faces[0].gender != null)
                                         {
@@ -125,11 +138,28 @@ module.exports = function(RED)
                                         node.send(msg);
                                         node.status({});
                                     }
-                                    else  if (config.operation == "adult") // Adult
+                                    else  if (config.operation == "Adult") // Adult
                                     {
                                         if (body.adult != null && body.adult.adultScore != null)
                                         {
                                             msg.payload = Math.round(body.adult.adultScore * Math.pow(10, 2)) / Math.pow(10, 2);;
+                                        }
+                                        else
+                                        {
+                                            msg.payload = null;
+                                        }
+                                        msg.detail = body;
+                                        node.send(msg);
+                                        node.status({});
+                                    }
+                                    else  if (config.operation == "Color")
+                                    {
+                                        if (body.color != null && body.color.dominantColorForeground != null && body.color.dominantColorBackground != null)
+                                        {
+                                            msg.payload = {
+                                                    foregroundColor: body.color.dominantColorForeground,
+                                                    backgroundColor: body.color.dominantColorBackground
+                                                };
                                         }
                                         else
                                         {
