@@ -2,6 +2,9 @@
 
 node-red-contrib-azure is an open source repo with a collection of <a href="http://nodered.org" target="_new">Node-RED</a> nodes that allows you to work with the different Azure services and offerrings.
 
+ **This is sample code only and should not be used in production.
+This repo is NOT actively being worked on!**
+
 <a href="https://github.com/Azure/node-red-contrib-azure/tree/master/blob-storage">blob-storage</a> - Azure Blob Storage
 
 <a href="https://github.com/Azure/node-red-contrib-azure/tree/master/documentdb">documentdb</a> Azure CosmosDB (formerly DocumentDB)
