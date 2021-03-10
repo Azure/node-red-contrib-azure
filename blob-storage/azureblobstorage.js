@@ -159,6 +159,7 @@ module.exports = function (RED) {
 
             if(!this.credentials.blob)
             {
+                node.log("msg.blobname: " + msg.blobname);
                 clientBlobName = msg.blobname;
             }
             else
@@ -175,19 +176,21 @@ module.exports = function (RED) {
                 clientContainerName = this.credentials.container;
             }
 
-            node.log("msg.destination: " + msg.destination);
-            if (msg.destination) {
+            if(!this.credentials.destination)
+            {
+                node.log("msg.destination: " + msg.destination);
                 destinationFile = msg.destination;
             }
-            else {
-                const fileName = clientBlobName.replace('.txt', '.downloaded.txt');
-                destinationFile = path.join(__dirname, fileName);
+            else
+            {
+                destinationFile = this.credentials.container;
             }
             
             node.log("destinationFile: " + destinationFile);
-            downloadBlob(blobservice, clientContainerName, clientBlobName, destinationFile, function() {
+            downloadBlob(msg, blobservice, clientContainerName, clientBlobName, destinationFile, function() {
                 node.log("Download completed!");
-                node.send("Download completed!");
+                msg.payload = "Download completed!";
+                node.send(msg);
             });   
             setStatus(statusEnum.received);
         });
@@ -197,14 +200,16 @@ module.exports = function (RED) {
         });
     }
 
-    function downloadBlob(blobservice, containerName, blobName, fileName, callback) {
+    function downloadBlob(msg, blobservice, containerName, blobName, fileName, callback) {
         blobservice.getBlobToLocalFile(containerName, blobName, fileName, function (error2) {
             if (error2) {
                 node.log(error2);
+                msg.status = error2;
+                node.send(msg);
             }
             else {
                 node.log("Blob '" + blobName + "' is downloaded successfully at '" + path.dirname(fileName) +"'");
-                node.send("Blob '" + blobName + "' is downloaded successfully at '" + path.dirname(fileName) +"'");
+                msg.status = "succes";
                 callback();
             }
         });

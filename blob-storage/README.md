@@ -3,7 +3,7 @@
 node-red-contrib-azure-blob-storage is a <a href="http://nodered.org" target="_new">Node-RED</a> node that allows you to work with Azure Blob Storage. You can create and delete Containers and also blob files.
 
 
-It contains tww Node-RED cloud nodes: **Azure Save Blob Storage** and **Azure Get Bob Storage**
+It contains two Node-RED cloud nodes: **Azure Save Blob Storage** and **Azure Get Bob Storage**
 
 ![](images/flow-nodes.PNG)
 
