@@ -64,27 +64,38 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         clientAccountName = this.credentials.accountname;
         clientAccountKey = this.credentials.key;
-        clientContainerName = this.credentials.container;
-        clientBlobName = this.credentials.blob;
         var blobService = Client.createBlobService(clientAccountName, clientAccountKey);
 
         this.on('input', function (msg) {
             node.log("Uploading blob...");
             var messageJSON = null;
 
+            if(!this.credentials.blob)
+            {
+                clientBlobName = msg.blobname;
+            }
+            else
+            {
+                clientBlobName = this.credentials.blob;
+            }
+            
+            if(!this.credentials.container)
+            {
+                clientContainerName = msg.container;
+            }
+            else
+            {
+                clientContainerName = this.credentials.container;
+            }
+
             clientAccountName = this.credentials.accountname;
             clientAccountKey = this.credentials.key;
-            clientContainerName = this.credentials.container;
-            if (!this.credentials.blob) {
-                var nameObject = path.parse(msg.payload);
-                clientBlobName = nameObject.base;
-            }
             
             // Sending data to Azure Blob Storage
             setStatus(statusEnum.sending);
             createContainer(clientContainerName, blobService, function() {
 
-                uploadBlob(msg.payload, blobService, clientContainerName, clientBlobName, function () {
+                uploadBlob(msg, msg.payload, blobService, clientContainerName, clientBlobName, function () {
 
                     node.log("Upload completed!");
 
@@ -110,7 +121,7 @@ module.exports = function (RED) {
         });
     }
 
-    function uploadBlob(file, blobService, containerName, blobName, callback) {
+    function uploadBlob(msg, file, blobService, containerName, blobName, callback) {
         blobService.createBlockBlobFromLocalFile(containerName, blobName, file, function (error) {
             if (error) {
                 node.log(error);
@@ -118,6 +129,11 @@ module.exports = function (RED) {
             else {
                 node.log("Blob '" + blobName + "' uploaded");
                 node.send("Blob '" + blobName + "' uploaded in container '" + containerName +"'");
+
+                console.log("Blob '" + blobName + "' uploaded in container '" + containerName +"'");
+                msg.azurl = 'https://whoblobstorage.blob.core.windows.net/' + containerName + '/' + blobName;
+                node.send(msg);
+
                 callback();
             }
         });
@@ -132,8 +148,6 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         clientAccountName = node.credentials.accountname;
         clientAccountKey = node.credentials.key;
-        clientContainerName = node.credentials.container;
-        clientBlobName = node.credentials.blob;
         var blobservice = Client.createBlobService(clientAccountName, clientAccountKey);
         var destinationFile;
 
@@ -143,18 +157,40 @@ module.exports = function (RED) {
             //createContainer(clientContainerName);
             setStatus(statusEnum.receiving);
 
-            node.log("msg.payload" + msg.payload);
-            if (msg.payload) {
-                destinationFile = msg.payload;
+            if(!this.credentials.blob)
+            {
+                node.log("msg.blobname: " + msg.blobname);
+                clientBlobName = msg.blobname;
             }
-            else {
-                const fileName = clientBlobName.replace('.txt', '.downloaded.txt');
-                destinationFile = path.join(__dirname, fileName);
+            else
+            {
+                clientBlobName = this.credentials.blob;
             }
             
-            node.log("destinationFile" + destinationFile);
-            downloadBlob(blobservice, clientContainerName, clientBlobName, destinationFile, function() {
+            if(!this.credentials.container)
+            {
+                clientContainerName = msg.container;
+            }
+            else
+            {
+                clientContainerName = this.credentials.container;
+            }
+
+            if(!this.credentials.destination)
+            {
+                node.log("msg.destination: " + msg.destination);
+                destinationFile = msg.destination;
+            }
+            else
+            {
+                destinationFile = this.credentials.container;
+            }
+            
+            node.log("destinationFile: " + destinationFile);
+            downloadBlob(msg, blobservice, clientContainerName, clientBlobName, destinationFile, function() {
                 node.log("Download completed!");
+                msg.payload = "Download completed!";
+                node.send(msg);
             });   
             setStatus(statusEnum.received);
         });
@@ -164,14 +200,16 @@ module.exports = function (RED) {
         });
     }
 
-    function downloadBlob(blobservice, containerName, blobName, fileName, callback) {
+    function downloadBlob(msg, blobservice, containerName, blobName, fileName, callback) {
         blobservice.getBlobToLocalFile(containerName, blobName, fileName, function (error2) {
             if (error2) {
                 node.log(error2);
+                msg.status = error2;
+                node.send(msg);
             }
             else {
-                node.log("Blob '"+ blobName + "' is downloaded successfully!");
-                node.send("Blob '" + blobName + "' is downloaded successfully at '" + path.dirname(fileName) +"'");
+                node.log("Blob '" + blobName + "' is downloaded successfully at '" + path.dirname(fileName) +"'");
+                msg.status = "succes";
                 callback();
             }
         });

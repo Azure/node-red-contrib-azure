@@ -15,7 +15,7 @@
             accountname: { type: "text" },
             key: { type: "text" },
             container: { type: "text" },
-            blob: { type: "text" },
+            blob: { type: "text" }
         }
     });
 
@@ -36,6 +36,7 @@
             key: { type: "text" },
             container: { type: "text" },
             blob: { type: "text" },
+            destination: { type: "text" }
         }
     });
 </script>
@@ -50,11 +51,11 @@
         <input type="text" id="node-input-key">
     </div>
     <div class="form-row">
-        <label for="node-input-container"><i class="fa fa-bookmark"></i> Storage Container Name</label>
+        <label for="node-input-container"><i class="fa fa-bookmark"></i> Storage Container Name (or use msg.container)</label>
         <input type="text" id="node-input-container">
     </div>
     <div class="form-row">
-        <label for="node-input-blob"><i class="fa fa-bookmark"></i> Storage Blob Name</label>
+        <label for="node-input-blob"><i class="fa fa-bookmark"></i> Storage Blob Name (or use msg.blobname)</label>
         <input type="text" id="node-input-blob">
     </div>
     <div class="form-row">
@@ -77,12 +78,16 @@
         <input type="text" id="node-input-key">
     </div>
     <div class="form-row">
-        <label for="node-input-container"><i class="fa fa-bookmark"></i> Storage Container Name</label>
+        <label for="node-input-container"><i class="fa fa-bookmark"></i> Storage Container Name (or use msg.container)</label>
         <input type="text" id="node-input-container">
     </div>
     <div class="form-row">
-        <label for="node-input-blob"><i class="fa fa-bookmark"></i> Storage Blob Name</label>
+        <label for="node-input-blob"><i class="fa fa-bookmark"></i> Storage Blob Name (or use msg.blobname)</label>
         <input type="text" id="node-input-blob">
+    </div>
+    <div class="form-row">
+        <label for="node-input-destination"><i class="fa fa-bookmark"></i> Destination File Path (or use msg.destination)</label>
+        <input type="text" id="node-input-destination">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>

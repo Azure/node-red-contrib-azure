@@ -1,7 +1,7 @@
 {
-  "name": "node-red-contrib-azure-blob-storage",
+  "name": "node-red-contrib-azure-blob-storage-dis1-bart",
   "description": "Connector to Azure Blob Storage on Node-Red",
-  "version": "0.4.0",
+  "version": "0.4.11",
   "engines": {
     "node": ">=0.10.0"
   },
@@ -35,6 +35,11 @@
       "name": "Rajasa Savant",
       "email": "rasavant@microsoft.com",
       "url": "http://rjsavant.com"
+    },
+    {
+      "name": "Bart Witdouck",
+      "email": "bart.witdouck@vandewiele.com",
+      "url": "http://www.vandewiele.com"
     }
   ]
 }
